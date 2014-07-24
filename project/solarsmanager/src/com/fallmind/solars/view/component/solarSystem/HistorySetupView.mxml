@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	showCloseButton="true" close="closeWindow()" creationComplete="initTimeBox()" width="1000" height="540">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.core.ScrollPolicy;
+			[Bindable]
+			public var historySetupData:XMLList;
+			
+			[Bindable]
+			private var yearArray:Array = new Array;
+			[Bindable]
+			private var monthArray:Array = new Array;
+			[Bindable]
+			private var dayArray:Array = new Array;
+			[Bindable]
+			private var hourArray:Array = new Array;
+			[Bindable]
+			private var minuteArray:Array = new Array;
+			
+			public static const CLOSE_HISTORY_SETUP_VIEW:String = "closehistorySetupView";
+			public static const HISTORYSETUP_VIEW_CONFIRM:String = "HistorySetupConfirm";
+			public static const SHOW_HISTORY_SETUP_DETAIL:String = "ShowHistorySetupDetail";
+			
+ 			private function initTimeBox():void {
+ 				var currentDate:Date = new Date();
+				for(var year:int = 2010; year < 2030; year++) {
+					var object1:Object = {
+						data : year,
+						label : year + "年"
+					};
+					yearArray.push(object1);
+				}	
+				endYear.selectedIndex = currentDate.fullYear - 2010;
+				if(currentDate.month == 0) {
+					startYear.selectedIndex = currentDate.fullYear - 2010 - 1;
+				} else {
+					startYear.selectedIndex = currentDate.fullYear - 2010;
+				}
+				for(var month:int = 1; month < 13; month++) {
+					var object2:Object = {
+						data : month,
+						label : month + "月"
+					};
+					monthArray.push(object2);
+				}
+				endMonth.selectedIndex = currentDate.month;
+				if(currentDate.month == 0) {
+					startMonth.selectedIndex = 11;
+				} else {
+					startMonth.selectedIndex = currentDate.month - 1;
+				}
+				for(var day:int = 1; day < 31; day++) {
+					var object3:Object = {
+						data : day,
+						label : day + "日"
+					};
+					dayArray.push(object3);
+				}
+				startDay.selectedIndex = currentDate.date - 1;
+				endDay.selectedIndex = currentDate.date -1;
+				for(var hour:int = 1; hour < 25; hour++) {
+					var object4:Object = {
+						data : hour,
+						label : hour + "时"
+					};
+					hourArray.push(object4);
+				}
+				startHour.selectedIndex = currentDate.hours - 1;
+				endHour.selectedIndex = currentDate.hours - 1;
+				for(var minute:int = 1; minute < 61; minute++) {
+					var object5:Object = {
+						data : minute,
+						label : minute + "分"
+					};
+					minuteArray.push(object5);
+				}
+				startMinute.selectedIndex = currentDate.minutes - 1;
+				endMinute.selectedIndex = currentDate.minutes - 1;
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_HISTORY_SETUP_VIEW));
+			}
+			private function confirm():void {
+				this.dispatchEvent(new Event(HISTORYSETUP_VIEW_CONFIRM));
+			}
+			private function showSetupDetail(e:Event):void {
+				this.dispatchEvent(new Event(SHOW_HISTORY_SETUP_DETAIL));
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox left="10" right="10">
+	<mx:Canvas width="100%">
+		<mx:Form fontSize="12">
+		<mx:FormItem label="起始时间">
+			<mx:HBox>
+				<mx:ComboBox width="90" id="startYear" dataProvider="{yearArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startMonth" dataProvider="{monthArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startDay" dataProvider="{dayArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startHour" dataProvider="{hourArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startMinute" dataProvider="{minuteArray}" labelField="label"></mx:ComboBox>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="终止时间">
+			<mx:HBox>
+				<mx:ComboBox width="90" id="endYear" dataProvider="{yearArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endMonth" dataProvider="{monthArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endDay" dataProvider="{dayArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endHour" dataProvider="{hourArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endMinute" dataProvider="{minuteArray}" labelField="label"></mx:ComboBox>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:Button label="确定" fontSize="12" click="confirm()" x="711" y="27"/>
+	<mx:Button label="返回" fontSize="12" click="closeWindow()" x="771" y="27"/>
+	</mx:Canvas>
+	
+	
+	<mx:DataGrid horizontalScrollPolicy="{ScrollPolicy.AUTO}" width="960" height="388" id="historySetupDataGrid" dataProvider="{historySetupData}" doubleClick="showSetupDetail(event)" doubleClickEnabled="true">
+		<mx:columns>
+			<mx:DataGridColumn headerText="数据时间" dataField="@SetTime"/>
+			<mx:DataGridColumn headerText="集热板定温出水水温（度）" dataField="@Collector_T_H" width="157"/>
+			<mx:DataGridColumn headerText="集热板最低水温（度）" dataField="@Collector_T_L" width="136"/>
+			<mx:DataGridColumn headerText="产热水箱最低水温（度）" dataField="@ProductBox_T_L" width="147"/>
+			<mx:DataGridColumn headerText="产热水箱最高水温（度）" dataField="@ProductBox_T_H" width="147"/>
+			<mx:DataGridColumn headerText="供热水箱最低水温（度）" dataField="@OfferBox_T_L" width="147"/>
+			<mx:DataGridColumn headerText="供热水箱最高水温（度）" dataField="@OfferBox_T_H" width="147"/>
+			<mx:DataGridColumn headerText="回水管最低水温（度）" dataField="@ReturnPipe_T_L" width="133"/>
+			<mx:DataGridColumn headerText="产热水箱满水水位（%）" dataField="@ProductBox_WL_H" width="142"/>
+			<mx:DataGridColumn headerText="供热水箱满水水位（%）" dataField="@OfferBox_WL_H" width="142"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
+	</mx:VBox>
+</mx:TitleWindow>

@@ -1,0 +1,17 @@
+<Config>
+	<WebserviceURL>http://localhost:4705/Service1.asmx?WSDL</WebserviceURL>
+	<ImageUploadURL>http://127.0.0.1/userImage/FileService.aspx</ImageUploadURL>
+	<ImageURL>http://127.0.0.1/userImage/upload/</ImageURL>
+	<QueryTime>3</QueryTime>
+	<OverTime>20000</OverTime>
+	<CheckTime>300</CheckTime>
+	<DefaultARMPassword>123456</DefaultARMPassword>
+	<FactoryPassword>111111</FactoryPassword>
+	<LowestTemp>0</LowestTemp>
+	<HighestTemp>80</HighestTemp>
+	<LowestLevel>20</LowestLevel>
+	<HighestLevel>100</HighestLevel>
+	<AutoLogoutTime>600</AutoLogoutTime>
+	<LoginBackground>http://127.0.0.1/SolarsManager/resource/solarLogin.jpg</LoginBackground>
+	<BannerBackground>http://127.0.0.1/SolarsManager/resource/banner.jpg</BannerBackground>
+</Config>

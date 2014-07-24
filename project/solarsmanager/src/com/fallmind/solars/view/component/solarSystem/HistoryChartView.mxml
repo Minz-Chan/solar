@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" creationComplete="test()">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			[Bindable]
+			private var historyData:ArrayCollection;
+			
+			public function fillData(data:ArrayCollection):void {
+				historyData = data;
+				
+			}
+			private function test():void {
+				var testData:ArrayCollection = new ArrayCollection([
+				{TimeUnit:"1月", Value1:1, Value2:2},
+				{TimeUnit:"2月", Value1:2, Value2:3}
+				]);
+				fillData(testData);
+			}
+		]]>
+	</mx:Script>
+	<mx:LineChart id="dataChart" dataProvider="{historyData}">
+	</mx:LineChart>	
+</mx:Canvas>

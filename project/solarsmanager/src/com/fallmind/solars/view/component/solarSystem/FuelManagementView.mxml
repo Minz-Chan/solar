@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" height="340" showCloseButton="true"
+	close="this.dispatchEvent(new Event(CLOSE_FUELMANAGEMENT_VIEW))">
+
+<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import mx.binding.utils.BindingUtils;
+		import mx.collections.ArrayCollection;
+		public static const QUERY_FUELS_DATA:String = "QueryFuelsData";
+		public static const ADD_FUEL:String = "AddFuel";
+		public static const DELETE_FUEL:String = "DeleteFuel";
+		public static const UPDATE_FUELINFO:String = "UpdateFuelInfo";
+		public static const SAVA_CHANGE_OF_FUELSINFO:String = "SaveChangeToFuelsinfo";
+		public static const CLOSE_FUELMANAGEMENT_VIEW:String = "CloseFuelManagementView";
+		public static const COMBOX_CHANGE:String = "ComboxChange";
+		
+		[Bindable]
+		public var fuelsList:ArrayCollection;
+		
+		[Bindable]
+		public var fuelsListForShow:ArrayCollection; 
+		
+		[Bindable]
+		public var fuelTypeArray:Array = [
+			{label:"燃油", data: 1},
+			{label:"燃气", data: 2},
+			{label:"电能", data: 3},
+			{label:"热能", data: 4},
+		];
+		
+		
+		private function comboxChange(e:Event):void {
+			this.dispatchEvent(new Event(COMBOX_CHANGE));	
+		}
+		
+		private function itemSelected(e:Event): void{
+			var obj:Object = dg.selectedItem;
+			fuelName.text = obj.fuelName.toString();
+			param1.text = obj.param1.toString();;
+			
+			lblPrompt.text = "";
+		}
+	
+	]]>
+</mx:Script>
+
+<mx:VBox>
+	<mx:Form>
+		<mx:HBox height="15">
+			<mx:Label id="lblPrompt" text="" color="#FF0000" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:FormItem label="类     型：">
+					<mx:ComboBox id="fuelType"  width="100" dataProvider="{fuelTypeArray}" change="comboxChange(event)" />
+			</mx:FormItem>
+		</mx:HBox>	
+		<mx:HBox>
+			<mx:FormItem label="燃料名称：">
+				<mx:TextInput id="fuelName" width="100" />
+			</mx:FormItem>
+			
+			<mx:FormItem label="热值系数：">
+				<mx:TextInput id="param1" width="88" />
+			</mx:FormItem>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:DataGrid id="dg" width="394" height="88%" bottom="0"  dataProvider="{fuelsListForShow}" itemClick="itemSelected(event)">
+				<mx:columns>
+					<mx:DataGridColumn headerText="ID" dataField="id"/>
+					<mx:DataGridColumn headerText="燃料名称" dataField="fuelName"/>
+					<mx:DataGridColumn headerText="类型" dataField="fuelType"/>
+					<mx:DataGridColumn headerText="热值系数" dataField="param1"/>
+					<mx:DataGridColumn headerText="热值系数" dataField="param2" visible="false" />
+					<mx:DataGridColumn headerText="状态" dataField="status"  />
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:HBox>
+		
+		<mx:HBox horizontalAlign="right">
+			<mx:Button label="查询"  x="439" y="350" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(QUERY_FUELS_DATA))"/>
+			<mx:Button label="新增" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(ADD_FUEL))"/>
+			<mx:Button label="删除" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(DELETE_FUEL))"/>
+			<mx:Button label="修改" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(UPDATE_FUELINFO))"/>
+
+			<mx:Button label="保存" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(SAVA_CHANGE_OF_FUELSINFO))"/>
+			<mx:Button label="返回" width="60" click="this.dispatchEvent(new Event(CLOSE_FUELMANAGEMENT_VIEW))" labelPlacement="right"/>
+		</mx:HBox>
+		
+	</mx:Form>
+</mx:VBox>
+
+	
+	
+	<mx:Array id="validators">
+		<mx:StringValidator id="txtFuelNameValidator" property="text" source="{fuelName}" required="true" requiredFieldError="不可为空" />
+		<mx:NumberValidator id="txtParam1Validator" property="text" source="{param1}" required="true" requiredFieldError="不可为空" 
+			minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+	</mx:Array>
+
+	
+</mx:TitleWindow>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="this.dispatchEvent(new Event(CLOSE_SOLARSYSTEM_VIEW2))">
+	<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.model.CheckProxy.AddSystemData;
+			import mx.formatters.DateFormatter;
+			public var setupTime:String = null;
+			
+			
+			private function setupTimeHandler(d:Date):void {
+				var fr:DateFormatter = new DateFormatter();
+				fr.formatString = "YYYY-MM-DD JJ:NN:SS";
+				
+				setupTime = fr.format(d);
+				
+			}
+			public function setData(data:XML):void {
+				systemNameInput.text = data.@System_Name;
+				ARM_ID_Input.text = data.@ARM_ID;
+				managerInput.text = data.@manager;
+				managerPhoneInput.text = data.@managerPhone;
+				setupTimeDataField.text = data.@FixTime;
+				setupTime = data.@FixTime;
+				imageField.source = data.@SysPictureRoute;
+				stateText = "图片在服务器上的路径：" + data.@SysPictureRoute;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox top="10" left="10" right="10" bottom="10">
+		<mx:VBox height="100%">
+		<mx:HBox>
+			
+		
+		<mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+			<mx:FormItem label="系统名" required="true">
+				<mx:TextInput id="systemNameInput"/>
+			</mx:FormItem>
+			<mx:FormItem label="主控器ID" required="true">
+				<mx:TextInput id="ARM_ID_Input" restrict="0-9"/>
+			</mx:FormItem>
+			<mx:FormItem label="管理员名">
+				<mx:TextInput id="managerInput"/>
+			</mx:FormItem>
+			<mx:FormItem label="管理员电话">
+				<mx:TextInput id="managerPhoneInput" restrict="0-9"/>
+			</mx:FormItem>
+			<mx:FormItem label="安装时间" required="true">
+				<mx:DateField id="setupTimeDataField" change="setupTimeHandler(DateField(event.target).selectedDate)"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:VBox>
+			<mx:VBox width="100%" height="100%">
+				<mx:HBox>
+					<mx:Button label="浏览" click="brow()"/>
+					<mx:Button label="上传" click="upload()"/>
+				</mx:HBox>
+				<mx:TextInput text="{stateText}" editable="false" width="239"/>
+				<mx:Image id="imageField" scaleContent="false" width="240" height="133"/>
+			</mx:VBox>
+		</mx:VBox>
+		</mx:HBox>
+		
+	</mx:VBox>
+	<mx:HBox horizontalAlign="center" width="100%">
+		<mx:Button label="保存" click="saveHandler()"/>
+		<mx:Button label="返回" click="closeWindow()"/>
+	</mx:HBox>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.messaging.channels.StreamingAMFChannel;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			public static const SAVE_SOLARSYSTEM2:String = "SaveSolarSystem2";
+			public static const CLOSE_SOLARSYSTEM_VIEW2:String = "CloseSolarSystemView2";
+			public static const BROW_IMAGE2:String = "BrowImage2";
+			public static const UPLOAD_IMAGE2:String = "UploadImage2";
+			
+			[Bindable]
+			public var stateText:String;
+			
+			private function saveHandler():void {
+				if( systemNameInput.text == "" || ARM_ID_Input.text == "") {
+					Alert.show("系统名，主控器ID不能为空");
+					return;
+				}
+				if(isNaN(parseInt(ARM_ID_Input.text)) || parseInt(ARM_ID_Input.text) >= 16) {
+					Alert.show("主控器ID必须为小于16的数字");
+					return;
+				}
+				if(setupTime == "") {
+					Alert.show("主控器安装时间未设置");
+					return;
+				}
+				this.dispatchEvent(new Event(SAVE_SOLARSYSTEM2));
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_SOLARSYSTEM_VIEW2));
+			}
+			private function brow():void {
+				this.dispatchEvent(new Event(BROW_IMAGE2));
+			}
+			private function upload():void {
+				this.dispatchEvent(new Event(UPLOAD_IMAGE2));
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			public static const CLOSE_SHOW_TIME_VIEW:String = "closeShowTimeView";
+			public static const SHOW_TIME:String = "ShowTime";
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_SHOW_TIME_VIEW));
+			}
+			private function showTime():void {
+				this.dispatchEvent(new Event(SHOW_TIME));
+			}
+			public function setState(state:int):void {
+				switch(state) {
+					case 0:
+						stateText.htmlText = "<font color='#000000'>当前系统时间</font><br>";
+						searchButton.enabled = true;
+						break;
+					case 1:
+						stateText.htmlText = "<font color='#FF0000'>正在发送指令，这个过程可能比较久，请耐心等待</font><br>";
+						searchButton.enabled = false;
+						break;
+					case 2:
+						stateText.htmlText = "<font color='#FF0000'>查询指令执行超时，以下为历史数据</font><br>";
+						searchButton.enabled = true;
+						break;
+					case 3:
+						stateText.htmlText = "<font color='#FF0000'>以下为历史数据，查看最新数据请点击查询按钮</font><br>";
+						searchButton.enabled = true;
+						break;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10">
+		<mx:Text id="stateText" text=" " width="280"/>
+		<mx:HBox>
+			<mx:Label text="时间"/>
+			<mx:Text id="timeText" width="120"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Button label="查询" click="showTime()" id="searchButton"/>
+			<mx:Button label="返回" click="closeWindow()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:TitleWindow>

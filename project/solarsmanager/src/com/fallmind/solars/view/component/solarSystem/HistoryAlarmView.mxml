@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()" width="1000" height="540" creationComplete="initTimeBox()">
+	<mx:Script>
+		<![CDATA[
+			public var startTime:Date;
+			public var endTime:Date;
+			
+			[Bindable]
+			public var historyAlarmData:XMLList;
+			
+			public static const CONFIRM_HISTORY_ALARM_VIEW:String = "ConfirmHistoryAlarmView";
+			public static const CLOSE_HISTORY_ALARM_VIEW:String = "CloseHistoryAlarm";
+			
+			[Bindable]
+			private var yearArray:Array = new Array;
+			[Bindable]
+			private var monthArray:Array = new Array;
+			[Bindable]
+			private var dayArray:Array = new Array;
+			[Bindable]
+			private var hourArray:Array = new Array;
+			
+			private function initTimeBox():void {
+				var currentDate:Date = new Date();
+				
+				for(var year:int = 2010; year < 2030; year++) {
+					var object1:Object = {
+						data : year,
+						label : year + "年"
+					};
+					yearArray.push(object1);
+				}	
+				endYear.selectedIndex = currentDate.fullYear - 2010;
+				if(currentDate.month == 0) {
+					startYear.selectedIndex = currentDate.fullYear - 2010 - 1;
+				} else {
+					startYear.selectedIndex = currentDate.fullYear - 2010;
+				}
+				for(var month:int = 1; month < 13; month++) {
+					var object2:Object = {
+						data : month,
+						label : month + "月"
+					};
+					monthArray.push(object2);
+				}
+				endMonth.selectedIndex = currentDate.month;
+				if(currentDate.month == 0) {
+					startMonth.selectedIndex = 11;
+				} else {
+					startMonth.selectedIndex = currentDate.month - 1;
+				}
+				
+				for(var day:int = 1; day < 31; day++) {
+					var object3:Object = {
+						data : day,
+						label : day + "日"
+					};
+					dayArray.push(object3);
+				}
+				startDay.selectedIndex = currentDate.date - 1;
+				endDay.selectedIndex = currentDate.date -1;
+				for(var hour:int = 1; hour < 25; hour++) {
+					var object4:Object = {
+						data : hour,
+						label : hour + "时"
+					};
+					hourArray.push(object4);
+				}
+				startHour.selectedIndex = currentDate.hours - 1;
+				endHour.selectedIndex = currentDate.hours - 1;
+			}
+			private function confirmHandler():void {
+				this.dispatchEvent(new Event(CONFIRM_HISTORY_ALARM_VIEW));
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_HISTORY_ALARM_VIEW));
+			}
+			private function startDateChanged(d:Date):void {
+				startTime = d;
+			}
+			
+			private function endDateChanged(d:Date):void {
+				endTime = d;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10">
+		<!--mx:HBox width="100%">
+			<mx:Label text="起始时间"/>
+			<mx:DateField change="startDateChanged(DateField(event.target).selectedDate)"/>
+			<mx:Label text="结束时间"/>
+			<mx:DateField change="endDateChanged(DateField(event.target).selectedDate)"/>
+			<mx:Button label="确定" click="confirmHandler()"/>
+			<mx:Button label="返回" click="closeWindow()"/>
+		</mx:HBox-->
+		<mx:Canvas width="100%">
+			<mx:Form fontSize="12">
+				<mx:FormItem label="起始时间">
+					<mx:HBox width="100%">
+						<mx:ComboBox width="90" id="startYear" dataProvider="{yearArray}" labelField="label"></mx:ComboBox>
+						<mx:ComboBox width="90" id="startMonth" dataProvider="{monthArray}" labelField="label"></mx:ComboBox>
+						<mx:ComboBox width="90" id="startDay" dataProvider="{dayArray}" labelField="label"></mx:ComboBox>
+						<mx:ComboBox width="90" id="startHour" dataProvider="{hourArray}" labelField="label"></mx:ComboBox>
+					</mx:HBox>
+				</mx:FormItem>
+				<mx:FormItem label="终止时间">
+					<mx:HBox width="100%">
+						<mx:ComboBox width="90" id="endYear" dataProvider="{yearArray}" labelField="label"></mx:ComboBox>
+						<mx:ComboBox width="90" id="endMonth" dataProvider="{monthArray}" labelField="label"></mx:ComboBox>
+						<mx:ComboBox width="90" id="endDay" dataProvider="{dayArray}" labelField="label"></mx:ComboBox>
+						<mx:ComboBox width="90" id="endHour" dataProvider="{hourArray}" labelField="label"></mx:ComboBox>
+					</mx:HBox>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:Button label="确定" fontSize="12" click="confirmHandler()" right="282" y="28"/>
+			<mx:Button label="返回" fontSize="12" click="closeWindow()" x="706" y="28"/>
+		</mx:Canvas>
+		<mx:DataGrid dataProvider="{historyAlarmData}" width="100%" height="100%">
+			<mx:columns>
+				<mx:DataGridColumn headerText="警告时间" dataField="@Alarm_Time" width="108"/>
+				<mx:DataGridColumn headerText="警告内容" dataField="@AlarmEvent" width="400"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+	
+</mx:TitleWindow>

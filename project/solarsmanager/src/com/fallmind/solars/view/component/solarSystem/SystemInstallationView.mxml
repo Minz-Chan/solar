@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" height="500" layout="absolute" showCloseButton="true" close="this.dispatchEvent(new Event(CLOSE_SOLARSYSTEM_VIEW))">
+	<mx:Script>
+		<![CDATA[
+			import mx.formatters.DateFormatter;
+			//public var setupTime:String;
+			[Bindable]
+			public var stateText:String;
+			
+			[Bindable]
+			private var installedArray:Array = [
+				"未安装",		
+				"已安装"
+			];
+			
+			[Bindable]
+			private var installedArray1:Array = [
+				"未安装",		// 0
+				"电锅炉辅助", 	// 1
+				"热泵辅助",		// 2
+				"蒸汽辅助",		// 3
+				"燃油辅助",		// 4
+				"燃气辅助",		// 5
+				"电辅助"			// 6
+				
+			];
+			
+			[Bindable]
+			private var connectedArray:Array = [
+				"接产热水箱",
+				"接供热水箱"
+			];
+			[Bindable]
+			private var startedArray:Array = [
+				"不启用",
+				"启用"
+			];
+			public function setState(state:int):void {
+				switch(state) {
+					case 0:		// 开始状态
+						dataStateText.htmlText = "<font color='#000000'>设置系统安装情况</font><br>";
+						stateEnable(true);
+						break;
+					case 1:
+						dataStateText.htmlText = "<font color='#FF0000'>正在设置，请耐心等待</font><br>";
+						stateEnable(false);
+						break;
+					case 2:
+						dataStateText.htmlText = "<font color='#FF0000'>设置超时，以下为上一次操作数据</font><br>";
+						stateEnable(true);
+						break;
+					case 3:
+						dataStateText.htmlText = "<font color='#FF0000'>正在发送查询指令，这个过程可能比较久，请耐心等待</font><br>";
+						stateEnable(false);
+						break;
+					case 4:
+						dataStateText.htmlText = "<font color='#FF0000'>查询指令执行超时，以下为历史数据</font><br>";
+						break;
+					case 5:	
+						dataStateText.htmlText = "<font color='#FF0000'>以下为历史数据，查看最新数据请点击查询按钮</font><br>";
+						break;
+				}
+			}
+			public function stateEnable(f:Boolean):void {
+				form1.enabled = f;
+				form2.enabled = f;
+				saveButton.enabled = f;
+				searchButton.enabled = f;
+				m_defaultButton.enabled = f;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" left="10" right="10" bottom="10" id="v1">
+	<mx:HBox>
+		<mx:Text id="dataStateText" text="正在获取数据"/>
+	</mx:HBox>
+	<mx:HBox height="100%">
+		<mx:Form id="form1">
+			
+			<mx:FormItem label="定温进水泵安装情况：">
+				<mx:ComboBox id="Collector_in_line_Fix" dataProvider="{installedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="集热板出水管接法：">
+				<mx:ComboBox id="jConnect" dataProvider="{connectedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="集热板循环温差管接法：">
+				<mx:ComboBox id="circleConnect" dataProvider="{connectedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="上冷水管安装情况：">
+				<mx:ComboBox id="coldPumpState" dataProvider="{installedArray}" width="110" close="setColdState(event)"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="上冷水管接法：">
+				<mx:ComboBox id="coldPumpConnect" dataProvider="{connectedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem>
+				
+			</mx:FormItem>
+			<mx:FormItem label="辅助加热设备安装情况：">
+				<mx:ComboBox id="airPumpState" dataProvider="{installedArray1}" width="110" close="setAirState(event)"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="辅助加热设备接法：">
+				<mx:ComboBox id="airPumpConnect" dataProvider="{connectedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="电加热安装情况：">
+				<mx:ComboBox id="elecPumpState" dataProvider="{installedArray}" width="110" close="setElecState(event)"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="电加热启用情况：">
+				<mx:ComboBox id="elecStart" dataProvider="{startedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="电加热接法：">
+				<mx:ComboBox id="elecPumpConnect" dataProvider="{connectedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			
+			
+		</mx:Form>
+	<mx:Canvas height="100%">
+		<mx:Form id="form2">
+			<mx:FormItem label="集热板1安装情况：">
+				<mx:ComboBox id="j1State" dataProvider="{installedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="集热板2安装情况：">
+				<mx:ComboBox id="j2State" dataProvider="{installedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="集热板3安装情况：">
+				<mx:ComboBox id="j3State" dataProvider="{installedArray}" width="110"></mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem>
+				
+			</mx:FormItem>
+			<mx:FormItem label="集热板面积（平方米）：">
+				<mx:TextInput id="Collector_Cubage" width="60" restrict="0-9"/>
+			</mx:FormItem>
+			<mx:FormItem label="产热水箱储水量（升）：">
+				<mx:TextInput id="ProductBox_Cubage" width="60" restrict="0-9"/>
+			</mx:FormItem>
+			<mx:FormItem label="产热水箱高度（米）：">
+				<mx:TextInput id="ProductBox_height" width="60" restrict="0-9."/>
+			</mx:FormItem>
+			<mx:FormItem label="产热水箱水位传感器量程（米）：">
+				<mx:TextInput id="PLSensorRange" width="60" restrict="0-9."/>
+			</mx:FormItem>
+			<mx:FormItem label="供热水箱储水量（升）：">
+				<mx:TextInput id="OfferBox_Cubage" width="60" restrict="0-9"/>
+			</mx:FormItem>
+			<mx:FormItem label="供热水箱高度（米）：">
+				<mx:TextInput id="OfferBox_height" width="60" restrict="0-9."/>
+			</mx:FormItem>
+			<mx:FormItem label="供热水箱水位传感器量程（米）：">
+				<mx:TextInput id="OLSensorRange" width="60" restrict="0-9."/>
+			</mx:FormItem>
+			
+			<mx:Canvas visible="false">
+				<mx:FormItem label="空气源热泵的COP：">
+				<mx:TextInput id="AirHeat_COP" width="60" restrict="0-9."/>
+				</mx:FormItem>
+				<mx:FormItem label="电加热值（千卡/千瓦时）：">
+					<mx:TextInput id="ElecHeat_Value" width="60" restrict="0-9"/>
+				</mx:FormItem>
+				<mx:FormItem label="电加热效率（%）：">
+					<mx:TextInput id="ElecHeat_Efficient" width="60" restrict="0-9"/>
+				</mx:FormItem>
+				<mx:FormItem label="系统电表互感数：">
+					<mx:TextInput id="ElecFactor" width="60" restrict="0-9."/>
+				</mx:FormItem>
+				<mx:FormItem label="辅助热源电表互感数：">
+					<mx:TextInput id="ExtraElecFactor" width="60" restrict="0-9."/>
+				</mx:FormItem>
+				<mx:FormItem label="辅助加热设备启用情况：">
+					<mx:ComboBox id="airStart" dataProvider="{startedArray}" width="110"></mx:ComboBox>
+				</mx:FormItem>
+			</mx:Canvas>
+			
+		</mx:Form>
+		<mx:HBox bottom="0" right="0">
+			<mx:Button id="configButton" label="配置" click="configDatamode()"/>
+			<mx:Button id="searchButton" label="查询" click="showInstallState()"/>
+			<mx:Button id="m_defaultButton" label="默认参数" click="getDefaultSetup()"/>
+			<mx:Button id="saveButton" label="保存" click="saveHandler()"/>
+			<mx:Button id="backButton" label="返回" click="closeWindow()"/>
+		</mx:HBox>
+	</mx:Canvas>
+	</mx:HBox>
+	
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.validators.ValidationResult;
+			import com.fallmind.solars.model.CheckProxy.InstallData;
+			import mx.controls.Alert;
+			public static const SAVE_SOLARSYSTEM:String = "SaveSolarSystem";
+			public static const CLOSE_SOLARSYSTEM_VIEW:String = "CloseSolarSystemView";
+			public static const CONFIG_DATA_MODE:String = "ConfigDataMode";
+			public static const BROW_IMAGE:String = "BrowImage";
+			public static const UPLOAD_IMAGE:String = "UploadImage";
+			public static const SHOW_INSTALL_STATE:String = "ShowInstallState";
+			private function setElec():void {
+				if(elecPumpState.selectedItem == "已安装") {
+					ElecHeat_Value.enabled = true;
+					ElecHeat_Efficient.enabled = true;
+					
+					elecStart.enabled = true;
+					elecPumpConnect.enabled = true;
+				} else {
+					ElecHeat_Value.text = "";
+					ElecHeat_Efficient.text = "";
+					ElecHeat_Value.enabled = false;
+					ElecHeat_Efficient.enabled = false;
+					
+					elecStart.enabled = false;
+					elecPumpConnect.enabled = false;
+				}
+			}
+			private function setAir():void {
+				if(airPumpState.selectedItem != "未安装") {
+					AirHeat_COP.enabled = true;
+					
+					airStart.enabled = true;
+					airPumpConnect.enabled = true;
+				} else {
+					AirHeat_COP.text = "";
+					AirHeat_COP.enabled = false;
+					
+					airStart.enabled = false;
+					airPumpConnect.enabled = false;
+				}
+			}
+			private function setCold():void {
+				if(coldPumpState.selectedItem == "已安装") {
+					coldPumpConnect.enabled = true;
+				} else {
+					coldPumpConnect.enabled = false;
+				}
+			}
+			private function setElecState(e:Event):void {
+				setElec();
+			}
+			private function setAirState(e:Event):void {
+				setAir();
+			}
+			private function setColdState(e:Event):void {
+				setCold();
+			}
+			private function setPump():void {
+				setElec();
+				setAir();
+				setCold();
+			}
+			public function setDefaultData():void {
+				j1State.setStyle("color", "0x000000");
+				j2State.setStyle("color", "0x000000");			
+				j3State.setStyle("color", "0x000000");
+				jConnect.setStyle("color", "0x000000");
+				circleConnect.setStyle("color", "0x000000");
+				airPumpState.setStyle("color", "0x000000");
+				airStart.setStyle("color", "0x000000");
+				airPumpConnect.setStyle("color", "0x000000");
+				elecPumpState.setStyle("color", "0x000000");
+				elecStart.setStyle("color", "0x000000");
+				elecPumpConnect.setStyle("color", "0x000000");
+				coldPumpState.setStyle("color", "0x000000");
+				coldPumpConnect.setStyle("color", "0x000000");
+				
+				j1State.selectedIndex = 1;
+				jConnect.selectedIndex = 1;
+				circleConnect.selectedIndex = 1;
+				elecPumpConnect.selectedIndex = 1;
+				airPumpState.selectedIndex = 1;
+				airStart.selectedIndex = 1;
+				airPumpConnect.selectedIndex = 1;
+				coldPumpState.selectedIndex = 1;
+				
+				Collector_Cubage.htmlText = "<font color='#000000'>100</font><br>";
+				ProductBox_Cubage.htmlText = "<font color='#000000'>10000</font><br>";
+				ProductBox_height.htmlText = "<font color='#000000'>2.5</font><br>";
+				PLSensorRange.htmlText = "<font color='#000000'>3.0</font><br>";
+				OfferBox_Cubage.htmlText = "<font color='#000000'>10000</font><br>";
+				OfferBox_height.htmlText = "<font color='#000000'>2.5</font><br>";
+				OLSensorRange.htmlText = "<font color='#000000'>5.0</font><br>";
+				AirHeat_COP.htmlText = "<font color='#000000'>4.00</font><br>";
+				ElecFactor.htmlText = "<font color='#000000'>1.00</font><br>";
+				ExtraElecFactor.htmlText = "<font color='#000000'>1.00</font><br>"
+				//ElecHeat_Value.enabled = false;
+				//ElecHeat_Efficient.enabled = false;
+				
+				//elecPumpConnect.enabled = false;
+				//elecStart.enabled = false;
+				setPump();
+				
+			}
+			private function getDefaultSetup():void {
+				setDefaultData();
+			}
+			private function showInstallState():void {
+				this.dispatchEvent(new Event(SHOW_INSTALL_STATE));
+			}
+			private function saveHandler():void {
+				this.dispatchEvent(new Event(SAVE_SOLARSYSTEM));
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_SOLARSYSTEM_VIEW));
+			}
+			private function configDatamode():void {
+				this.dispatchEvent(new Event(CONFIG_DATA_MODE));			
+			}
+			// 把字体颜色全部变成黑色
+			public function colorBack():void {
+				j1State.setStyle("color", "0x000000");
+				j2State.setStyle("color", "0x000000");			
+				j3State.setStyle("color", "0x000000");
+				jConnect.setStyle("color", "0x000000");
+				circleConnect.setStyle("color", "0x000000");
+				airPumpState.setStyle("color", "0x000000");
+				airStart.setStyle("color", "0x000000");
+				airPumpConnect.setStyle("color", "0x000000");
+				elecPumpState.setStyle("color", "0x000000");
+				elecStart.setStyle("color", "0x000000");
+				elecPumpConnect.setStyle("color", "0x000000");
+				coldPumpState.setStyle("color", "0x000000");
+				coldPumpConnect.setStyle("color", "0x000000");
+				Collector_Cubage.setStyle("color", "0x000000");
+				ProductBox_Cubage.setStyle("color", "0x000000");
+				ProductBox_height.setStyle("color", "0x000000");
+				OfferBox_Cubage.setStyle("color", "0x000000");
+				OfferBox_height.setStyle("color", "0x000000");
+				AirHeat_COP.setStyle("color", "0x000000");
+				ElecHeat_Value.setStyle("color", "0x000000");
+				ElecHeat_Efficient.setStyle("color", "0x000000");
+				PLSensorRange.setStyle("color", "0x000000");
+				OLSensorRange.setStyle("color", "0x000000");
+				ElecFactor.setStyle("color", "0x000000");
+				ExtraElecFactor.setStyle("color", "0x000000");
+			}
+			public function checkReturnData(data:XML):void {
+				j1State.setStyle("color", "0x000000");
+				j2State.setStyle("color", "0x000000");			
+				j3State.setStyle("color", "0x000000");
+				jConnect.setStyle("color", "0x000000");
+				circleConnect.setStyle("color", "0x000000");
+				airPumpState.setStyle("color", "0x000000");
+				airStart.setStyle("color", "0x000000");
+				airPumpConnect.setStyle("color", "0x000000");
+				elecPumpState.setStyle("color", "0x000000");
+				elecStart.setStyle("color", "0x000000");
+				elecPumpConnect.setStyle("color", "0x000000");
+				coldPumpState.setStyle("color", "0x000000");
+				coldPumpConnect.setStyle("color", "0x000000");
+			
+				if(	Collector_Cubage.text != data.@Collector_Cubage ) {
+					Collector_Cubage.htmlText = "<font color='#FF0000'>" + data.@Collector_Cubage + "</font><br>";
+				} else {
+					Collector_Cubage.htmlText = "<font color='#000000'>" + data.@Collector_Cubage + "</font><br>";
+				}
+				if(ElecFactor.text != data.@TotalEleFactor) {
+					ElecFactor.htmlText = "<font color='#FF0000'>" + data.@TotalEleFactor + "</font><br>";
+				} else {
+					ElecFactor.htmlText = "<font color='#000000'>" + data.@TotalEleFactor + "</font><br>";
+				}
+				if(ExtraElecFactor.text != data.@AuxiliaryEleFactor) {
+					ExtraElecFactor.htmlText = "<font color='#FF0000'>" + data.@AuxiliaryEleFactor + "</font><br>";
+				} else {
+					ExtraElecFactor.htmlText = "<font color='#000000'>" + data.@AuxiliaryEleFactor + "</font><br>";
+				}
+				if(	ProductBox_Cubage.text != data.@ProductBox_Cubage ) {
+					ProductBox_Cubage.htmlText = "<font color='#FF0000'>" + data.@ProductBox_Cubage + "</font><br>";
+				} else {
+					ProductBox_Cubage.htmlText = "<font color='#000000'>" + data.@ProductBox_Cubage + "</font><br>";
+				}
+				if(	ProductBox_height.text != (Number(data.@ProductBox_height) / 10).toString() ) {
+					ProductBox_height.htmlText = "<font color='#FF0000'>" + (Number(data.@ProductBox_height) / 10).toString() + "</font><br>";
+				} else {
+					ProductBox_height.htmlText = "<font color='#000000'>" + (Number(data.@ProductBox_height) / 10).toString() + "</font><br>";
+				}
+				if(	OfferBox_Cubage.text != data.@OfferBox_Cubage ) {
+					OfferBox_Cubage.htmlText = "<font color='#FF0000'>" + data.@OfferBox_Cubage + "</font><br>";
+				} else {
+					OfferBox_Cubage.htmlText = "<font color='#000000'>" + data.@OfferBox_Cubage + "</font><br>";
+				}
+				if(	OfferBox_height.text != (Number(data.@OfferBox_height) / 10).toString() ) {
+					OfferBox_height.htmlText = "<font color='#FF0000'>" + (Number(data.@OfferBox_height) / 10).toString() + "</font><br>";
+				} else {
+					OfferBox_height.htmlText = "<font color='#000000'>" + (Number(data.@OfferBox_height) / 10).toString() + "</font><br>";
+				}
+				if(	Number(AirHeat_COP.text).toFixed(2) != Number(data.@AirHeat_COP).toFixed(2) ) {
+					AirHeat_COP.htmlText = "<font color='#FF0000'>" + Number(data.@AirHeat_COP).toFixed(2) + "</font><br>";
+				} else {
+					AirHeat_COP.htmlText = "<font color='#000000'>" + Number(data.@AirHeat_COP).toFixed(2) + "</font><br>";
+				}
+				if(	ElecHeat_Value.text != data.@ElecHeat_Value ) {
+					ElecHeat_Value.htmlText = "<font color='#FF0000'>" + data.@ElecHeat_Value + "</font><br>";
+				} else {
+					ElecHeat_Value.htmlText = "<font color='#000000'>" + data.@ElecHeat_Value + "</font><br>";
+				}
+				if(	ElecHeat_Efficient.text != data.@ElecHeat_Efficient ) {
+					ElecHeat_Efficient.htmlText = "<font color='#FF0000'>" + data.@ElecHeat_Efficient + "</font><br>";
+				} else {
+					ElecHeat_Efficient.htmlText = "<font color='#000000'>" + data.@ElecHeat_Efficient + "</font><br>";
+				}
+				if(	PLSensorRange.text != (Number(data.@PLSensorRange) / 10).toString() ) {
+					PLSensorRange.htmlText = "<font color='#FF0000'>" + (Number(data.@PLSensorRange) / 10).toString() + "</font><br>";
+				} else {
+					PLSensorRange.htmlText = "<font color='#000000'>" + (Number(data.@PLSensorRange) / 10).toString() + "</font><br>";
+				}
+				if(	OLSensorRange.text != (Number(data.@OLSensorRange) / 10).toString() ) {
+					OLSensorRange.htmlText = "<font color='#FF0000'>" + (Number(data.@OLSensorRange) / 10).toString() + "</font><br>";
+				} else {
+					OLSensorRange.htmlText = "<font color='#000000'>" + (Number(data.@OLSensorRange) / 10).toString() + "</font><br>";
+				}
+				if(j1State.selectedIndex != int(data.@Collector1_Fix)) {
+					j1State.setStyle("color", "0xFF0000");
+					j1State.selectedIndex = int(data.@Collector1_Fix);
+				} 
+				if(int(data.@Collector2_Fix) != j2State.selectedIndex) {
+					j2State.setStyle("color", "0xFF0000");
+					j2State.selectedIndex = int(data.@Collector2_Fix);
+				} 
+				if(int(data.@Collector3_Fix) != j3State.selectedIndex) {
+					j3State.setStyle("color", "0xFF0000");
+					j3State.selectedIndex = int(data.@Collector3_Fix);
+				}
+				if(int(data.@OutHose_ConnectObj) != jConnect.selectedIndex) {
+					jConnect.setStyle("color", "0xFF0000");
+					jConnect.selectedIndex = int(data.@OutHose_ConnectObj);
+				}
+				if(int(data.@Collector_in_line_Fix) != Collector_in_line_Fix.selectedIndex) {
+					Collector_in_line_Fix.setStyle("color", "0xFF0000");
+					Collector_in_line_Fix.selectedIndex = int(data.@Collector_in_line_Fix);
+				}
+				if(int(data.@CycleHose_ConnectObj) != circleConnect.selectedIndex) {
+					circleConnect.setStyle("color", "0xFF0000");
+					circleConnect.selectedIndex = int(data.@CycleHose_ConnectOBJ);
+				}
+				// modified by cmz 2013.05.23 20:55
+				if(int(String(data.@AuxiliaryDeviceType)) != airPumpState.selectedIndex) {
+					airPumpState.setStyle("color", "0xFF0000");
+					airPumpState.selectedIndex = int(String(data.@AuxiliaryDeviceType));
+					
+				}
+				if(int(String(data.@AirHeat_Fix).charAt(2)) != airStart.selectedIndex) {
+					airStart.setStyle("color", "0xFF0000");
+					airStart.selectedIndex = int(String(data.@AirHeat_Fix).charAt(2));
+				}
+					
+				if(int(String(data.@AirHeat_Fix).charAt(4)) != airPumpConnect.selectedIndex) {
+					airPumpConnect.setStyle("color", "0xFF0000");
+					airPumpConnect.selectedIndex = int(String(data.@AirHeat_Fix).charAt(4));
+				}
+				if(int(String(data.@ElecHeat_Fix).charAt(0)) != elecPumpState.selectedIndex) {
+					elecPumpState.setStyle("color", "0xFF0000");
+					elecPumpState.selectedIndex = int(String(data.@ElecHeat_Fix).charAt(0));
+				}
+				if(int(String(data.@ElecHeat_Fix).charAt(2)) != elecStart.selectedIndex) {
+					elecStart.setStyle("color", "0xFF0000");
+					elecStart.selectedIndex = int(String(data.@ElecHeat_Fix).charAt(2));
+				}
+				if(int(String(data.@ElecHeat_Fix).charAt(4)) != elecPumpConnect.selectedIndex) {
+					elecPumpConnect.setStyle("color", "0xFF0000");
+					elecPumpConnect.selectedIndex = int(String(data.@ElecHeat_Fix).charAt(4));
+					
+				}
+				if(int(String(data.@ColdHose_Fix).charAt(0)) != coldPumpState.selectedIndex) {
+					coldPumpState.setStyle("color", "0xFF0000");
+					coldPumpState.selectedIndex = int(String(data.@ColdHose_Fix).charAt(0));
+				}
+				if(int(String(data.@ColdHose_Fix).charAt(2)) != coldPumpConnect.selectedIndex) {
+					coldPumpConnect.setStyle("color", "0xFF0000");
+					coldPumpConnect.selectedIndex = int(String(data.@ColdHose_Fix).charAt(2));
+				}
+				// 判断空气源热泵和电加热是否安装，如果未安装，要把配置空气源热泵和电加热的项目置为不可用，并且清空
+				if(elecPumpState.selectedIndex == 1) {
+					ElecHeat_Value.enabled = true;
+					ElecHeat_Efficient.enabled = true;
+					
+				} else {
+					ElecHeat_Value.text = "";
+					ElecHeat_Efficient.text = "";
+					ElecHeat_Value.enabled = false;
+					ElecHeat_Efficient.enabled = false;
+				}
+				if(airPumpState.selectedIndex != 0) {
+					AirHeat_COP.enabled = true;
+				} else {
+					AirHeat_COP.text = "";
+					AirHeat_COP.enabled = false;
+				}
+				setPump();
+			}
+			public function setFromInstallData(data:InstallData):void {
+				j1State.selectedIndex = data.j1State;
+				j2State.selectedIndex = data.j2State;	
+				j3State.selectedIndex = data.j3State;
+				jConnect.selectedIndex = data.jConnect;
+				circleConnect.selectedIndex = data.circleConnect;
+				airPumpState.selectedIndex = data.airPumpState;
+				airStart.selectedIndex = data.airStart;
+				airPumpConnect.selectedIndex = data.airPumpConnect;
+				elecPumpState.selectedIndex = data.elecPumpState;
+				elecStart.selectedIndex = data.elecStart;
+				elecPumpConnect.selectedIndex = data.elecPumpConnect;
+				coldPumpState.selectedIndex = data.coldPumpState;
+				coldPumpConnect.selectedIndex = data.coldPumpConnect;
+				Collector_in_line_Fix.selectedIndex = data.Collector_in_line_Fix;
+				
+				Collector_Cubage.text = data.Collector_Cubage;
+				ProductBox_Cubage.text = data.ProductBox_Cubage;
+				ProductBox_height.text = data.ProductBox_height;
+				OfferBox_Cubage.text = data.OfferBox_Cubage;
+				OfferBox_height.text = data.OfferBox_height;
+				AirHeat_COP.text = data.AirHeat_COP;
+				ElecHeat_Value.text = data.ElecHeat_Value;
+				ElecHeat_Efficient.text = data.ElecHeat_Efficient;
+				PLSensorRange.text = data.PLSensorRange;
+				OLSensorRange.text = data.OLSensorRange;
+				if(data.ElecFactor) {
+					ElecFactor.text = data.ElecFactor.toString();
+				} else {
+					ElecFactor.text = "1";
+				}
+				if(data.ExtraElecFactor) {
+					ExtraElecFactor.text = data.ExtraElecFactor.toString();
+				} else {
+					ExtraElecFactor.text = "1";
+				}
+				
+				// 判断空气源热泵和电加热是否安装，如果未安装，要把配置空气源热泵和电加热的项目置为不可用，并且清空
+				if(elecPumpState.selectedIndex == 1) {
+					ElecHeat_Value.enabled = true;
+					ElecHeat_Efficient.enabled = true;
+				} else {
+					ElecHeat_Value.text = "";
+					ElecHeat_Efficient.text = "";
+					ElecHeat_Value.enabled = false;
+					ElecHeat_Efficient.enabled = false;
+				}
+				if(airPumpState.selectedIndex != 0) {
+					AirHeat_COP.enabled = true;
+				} else {
+					AirHeat_COP.text = "";
+					AirHeat_COP.enabled = false;
+				}
+				setPump();
+			}
+			public function setData(data:XML):void {
+				j1State.setStyle("color", "0x000000");
+				j2State.setStyle("color", "0x000000");			
+				j3State.setStyle("color", "0x000000");
+				jConnect.setStyle("color", "0x000000");
+				circleConnect.setStyle("color", "0x000000");
+				airPumpState.setStyle("color", "0x000000");
+				airStart.setStyle("color", "0x000000");
+				airPumpConnect.setStyle("color", "0x000000");
+				elecPumpState.setStyle("color", "0x000000");
+				elecStart.setStyle("color", "0x000000");
+				elecPumpConnect.setStyle("color", "0x000000");
+				coldPumpState.setStyle("color", "0x000000");
+				coldPumpConnect.setStyle("color", "0x000000");
+				
+				Collector_Cubage.htmlText = "<font color='#000000'>" + data.@Collector_Cubage + "</font><br>";
+				ProductBox_Cubage.htmlText = "<font color='#000000'>" + data.@ProductBox_Cubage + "</font><br>";
+				ProductBox_height.htmlText = "<font color='#000000'>" + (int(data.@ProductBox_height) / 10).toString() + "</font><br>";
+				OfferBox_Cubage.htmlText = "<font color='#000000'>" + data.@OfferBox_Cubage + "</font><br>";
+				OfferBox_height.htmlText = "<font color='#000000'>" + (int(data.@OfferBox_height) / 10).toString() + "</font><br>";
+				AirHeat_COP.htmlText = "<font color='#000000'>" + Number(data.@AirHeat_COP).toFixed(2) + "</font><br>";
+				ElecHeat_Value.htmlText = "<font color='#000000'>" + data.@ElecHeat_Value + "</font><br>";
+				ElecHeat_Efficient.htmlText = "<font color='#000000'>" + data.@ElecHeat_Efficient + "</font><br>";
+				PLSensorRange.htmlText = "<font color='#000000'>" + (int(data.@PLSensorRange) / 10).toString() + "</font><br>";
+				OLSensorRange.htmlText = "<font color='#000000'>" + (int(data.@OLSensorRange) / 10).toString() + "</font><br>";
+				if(data.@TotalEleFactor != "") {
+					ElecFactor.htmlText = "<font color='#000000'>" + int(data.@TotalEleFactor).toString() + "</font><br>";
+				} else {
+					ElecFactor.htmlText = "<font color='#000000'>1</font><br>";	
+				}
+				if(data.@AuxiliaryEleFactor != "") {
+					ExtraElecFactor.htmlText = "<font color='#000000'>" + int(data.@AuxiliaryEleFactor).toString() + "</font><br>";
+				} else {
+					ExtraElecFactor.htmlText = "<font color='#000000'>1</font><br>";	
+				}
+				if(data.@Collector1_Fix == "1") {
+					j1State.selectedIndex = 1;
+				} 
+				if(data.@Collector2_Fix == "1") {
+					j2State.selectedIndex = 1;
+				}
+				if(data.@Collector3_Fix == "1") {
+					j3State.selectedIndex = 1;
+				}
+				if(data.@OutHose_ConnectObj == "1") {
+					jConnect.selectedIndex = 1;
+				}
+				if(data.@Collector_in_line_Fix == "1") {
+					Collector_in_line_Fix.selectedIndex = 1;
+				}
+				if(data.@CycleHose_ConnectObj == "1") {
+					circleConnect.selectedIndex = 1;
+				}
+				// modified by cmz 2013.05.23 20:57
+				/*
+				if(String(data.@AirHeat_Fix).charAt(0) == "0") {
+					airPumpState.selectedIndex = 0;
+					AirHeat_COP.text = "";
+					AirHeat_COP.enabled = false;
+				} else {
+					airPumpState.selectedIndex = int(String(data.@AirHeat_Fix).charAt(0));
+					AirHeat_COP.enabled = true;
+				}*/
+				if(String(data.@AuxiliaryDeviceType) == "0") {
+					airPumpState.selectedIndex = 0;
+					AirHeat_COP.text = "";
+					AirHeat_COP.enabled = false;
+				} else {
+					airPumpState.selectedIndex = int(String(data.@AuxiliaryDeviceType));
+					AirHeat_COP.enabled = true;
+				}
+				
+				
+				if(String(data.@AirHeat_Fix).charAt(2) == "1") {
+					airStart.selectedIndex = 1;
+				}
+					
+				if(String(data.@AirHeat_Fix).charAt(4) == "1") {
+					airPumpConnect.selectedIndex = 1;
+				}
+				if(String(data.@ElecHeat_Fix).charAt(0) == "1") {
+					elecPumpState.selectedIndex = 1;
+					
+					ElecHeat_Value.enabled = true;
+					ElecHeat_Efficient.enabled = true;
+				} else {
+					elecPumpState.selectedIndex = 0;
+					ElecHeat_Value.text = "";
+					ElecHeat_Efficient.text = "";
+					ElecHeat_Value.enabled = false;
+					ElecHeat_Efficient.enabled = false;
+				}
+				if(String(data.@ElecHeat_Fix).charAt(2) == "1") {
+					elecStart.selectedIndex = 1;
+				}
+				if(String(data.@ElecHeat_Fix).charAt(4) == "1") {
+					elecPumpConnect.selectedIndex = 1;
+				}
+				if(String(data.@ColdHose_Fix).charAt(0) == "1") {
+					coldPumpState.selectedIndex = 1;
+				}
+				if(String(data.@ColdHose_Fix).charAt(2) == "1") {
+					coldPumpConnect.selectedIndex = 1;
+				}
+				setPump();
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

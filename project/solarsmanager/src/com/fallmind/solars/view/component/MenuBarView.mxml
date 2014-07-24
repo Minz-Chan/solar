@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:component="com.fallmind.solars.view.component.*" 
+	xmlns:ClientSetup="com.fallmind.solars.view.component.ClientSetup.*" 
+	xmlns:clientSetup="com.fallmind.solars.view.component.clientSetup.*" 
+	xmlns:solarSystem="com.fallmind.solars.view.component.solarSystem.*" width="100%" height="100%" creationComplete="init()">
+<mx:Script>
+	<![CDATA[
+		import com.fallmind.solars.model.bussiness.ConfigManager;
+		import mx.collections.ArrayCollection;
+		[Embed(source="resource/title1.png")]
+        private var title1:Class;
+            
+        [Embed(source="resource/title2.png")]
+        private var title2:Class;
+        
+        /*[Embed(source="resource/banner.jpg")]
+        [Bindable]   
+       	private var zwdTitle:Class;*/          
+            
+        [Bindable]
+        private var viewIcons:Array = [title1, title2];
+        
+        private var config:ConfigManager = ConfigManager.getManageManager();
+        private function init():void {
+        	//bannerImage.source = config.bannerBackground;
+        }
+	]]>
+</mx:Script>
+<mx:Image id="bannerImage" left="10"/>
+<mx:HDividedBox left="10" right="10" top="106" bottom="0">
+	<mx:Canvas width="23%" height="100%" cornerRadius="4" borderStyle="solid" backgroundColor="0xffffff">
+		<mx:HBox bottom="0" top="0" left="0" right="0">
+		<mx:TabBar dataProvider="{viewstack1}" direction="vertical" verticalGap="2"
+		     tabHeight="110" width="32" fontSize="12" itemClick="infoManageViewClick(event)"
+		/>
+		<mx:ViewStack id="viewstack1" width="95%" height="100%"
+	        paddingBottom="10" paddingRight="10" paddingTop="10"
+	        fontSize="12" creationPolicy="all">
+	             
+	            <mx:VBox width="100%" height="100%" horizontalAlign="center" icon="{title1}">
+	                 <mx:LinkBar styleName="ChineseFont" id="linkBarMenu" direction="vertical" horizontalAlign="center" width="100%" fontSize="12"
+	                 	dataProvider="{infoManageViewStack}" itemClick="infoManageChange(event)"/>
+	            </mx:VBox>
+	            
+	            <mx:VBox width="100%" height="100%" horizontalAlign="center" icon="{title2}">
+	                <mx:Tree id="areaTree" width="100%" height="100%" dataProvider="{treeData}"
+	                	showRoot="false" labelField="@name" fontSize="12" change="treeChanged(event)"/>
+	            </mx:VBox>     
+	     </mx:ViewStack>
+	</mx:HBox>
+	</mx:Canvas>
+
+	<mx:Canvas width="77%" height="100%" cornerRadius="4" borderStyle="solid" creationPolicy="all" backgroundColor="0xffffff">
+		<mx:ViewStack id="infoManageViewStack" width="100%" height="100%" creationPolicy="all">
+			<clientSetup:SolarInfoManageView id="solarInfoManageView"/>
+			<clientSetup:UserInfoManageView id="userInfoManageView"/>
+			<clientSetup:RegionInfoManageView id="regionInfoManageView"/>
+			<clientSetup:CommunityInfoManageView id="communityInfoView"/>
+			
+		</mx:ViewStack>
+		<solarSystem:SolarSystemManageView id="solarSystemManageView" visible="false" 
+			x="{infoManageViewStack.x}" 
+			y="{infoManageViewStack.y}"/>
+	</mx:Canvas>
+</mx:HDividedBox>
+
+<mx:Script>
+	<![CDATA[
+		[Bindable]
+		public var treeData:XMLList;
+		
+		public static const CHANGE_SYSTEM_VIEW:String = "ChangeSystemView";
+		public static const CHANGE_INFO_VIEW:String = "ChangeInfoView";
+		public static const RELOAD_DATA:String = "ReloadData"
+		private function treeChanged( event:Event ):void {
+			var selectedNode:XML=Tree(event.target).selectedItem as XML;
+			if(!areaTree.dataDescriptor.isBranch(selectedNode) && selectedNode.name().localName != "CommunityInfo") {
+				infoManageViewStack.visible = false;
+				solarSystemManageView.visible = true;
+				this.dispatchEvent(new Event(CHANGE_SYSTEM_VIEW));
+				Tree(event.target).selectedItem=null;  
+			}
+			
+		}
+		private function infoManageViewClick( event:Event ):void {
+			infoManageViewStack.visible = true;	
+			solarSystemManageView.visible = false;
+			this.dispatchEvent(new Event(CHANGE_INFO_VIEW));
+			this.dispatchEvent(new Event(RELOAD_DATA));
+		}
+		// 当太阳能系统平台管理的菜单之间切换时，要重新载入数据，也就是重新登录一次
+		private function infoManageChange(event:Event):void {
+			this.dispatchEvent(new Event(RELOAD_DATA));
+		}
+	]]>
+</mx:Script>
+
+</mx:Canvas>
+   

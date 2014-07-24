@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300"
+	creationComplete="init()" >
+	
+	
+	<mx:Script>
+	<![CDATA[
+		import com.fallmind.solars.model.bussiness.ConfigManager;
+		import mx.controls.Alert;
+		import mx.collections.ArrayCollection;  
+
+		public var PORTAL_SELECTION:String = "PortalSelection";
+		[Bindable]
+		public var companys:Array;
+		public var url:String;  
+		private var config:ConfigManager = ConfigManager.getManageManager();
+		
+		public function init():void {
+			backgroundImage.source = config.portalBackground;
+		}
+		
+		public function OnCompanyClick():void{
+			//Alert.show(companyList.selectedItem.data);
+			this.dispatchEvent(new Event(PORTAL_SELECTION)); 
+		}
+		
+	]]>
+	</mx:Script>
+	<mx:Image id="backgroundImage" width="100%" height="100%" scaleContent="true" maintainAspectRatio="false" />
+	<mx:ComboBox dataProvider="{companys}" width="120" id="companyList" horizontalCenter="10" verticalCenter="-20"></mx:ComboBox>
+	<mx:Button label="进入"  click="OnCompanyClick()" horizontalCenter="0" verticalCenter="10" width="90"/>
+	<mx:Label text="集群：" verticalCenter="-20" horizontalCenter="-70"/>
+	
+	
+</mx:Canvas>

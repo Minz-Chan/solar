@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" verticalGap="10" horizontalGap="10" showCloseButton="true" close="closeWindow()" width="1000" height="540">
+	<mx:Script>
+		<![CDATA[
+			import mx.containers.VBox;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.controls.DataGrid;
+			import mx.managers.PopUpManager;
+			import mx.core.ScrollPolicy;
+			import mx.collections.ArrayCollection;
+			import be.wellconsidered.services.events.OperationEvent;
+			
+			public var dg:DataGrid;
+			public var pageIndex:String;
+			public var pageSize:String;
+			public var pagingBar:PagingBar;
+			public static const NEXT_PAGE:String = "NextPage";
+			
+			[Bindable]
+			public var historyData:XMLList;
+			
+			public static const CLOSW_HISTORYDATA_DISPLAY_VIEW:String = "CloseHistoryDataDisplayView";
+			public function setData(data:XML):void {
+				for each(var item:XML in data..row) {
+					var openDevice:String = item.@PumpState;
+					item.@Collector1_In_Open = openDevice.charAt(0) == '0' ? "关闭" : "开启";
+					item.@Collector2_In_Open = openDevice.charAt(2) == '0' ? "关闭" : "开启";
+					item.@Collector3_In_Open = openDevice.charAt(4) == '0' ? "关闭" : "开启";
+					item.@Collector1_Loop_Open = openDevice.charAt(6) == '0' ? "关闭" : "开启";
+					item.@Collector2_Loop_Open = openDevice.charAt(8) == '0' ? "关闭" : "开启";
+					item.@Collector3_Loop_Open = openDevice.charAt(10) == '0' ? "关闭" : "开启";
+					item.@Product_Box_Open = openDevice.charAt(12) == '0' ? "关闭" : "开启";
+					item.@Offer_Product_Box_Open = openDevice.charAt(14) == '0' ? "关闭" : "开启";
+					item.@AirHeat_Open = openDevice.charAt(16) == '0' ? "关闭" : "开启";
+					item.@ElecHeat_Open = openDevice.charAt(18) == '0' ? "关闭" : "开启";
+					item.@Pressure_Box_Open = openDevice.charAt(20) == '0' ? "关闭" : "开启";
+					item.@ReturnPipe_Open = openDevice.charAt(22) == '0' ? "关闭" : "开启";
+					item.@Cold_Box_Open = openDevice.charAt(24) == '0' ? "关闭" : "开启";
+				}
+				//dg.dataProvider = data.row;
+				var dataList:ArrayCollection = new ArrayCollection();
+				var item:XML;
+				for each(item in data.row){
+					dataList.addItem(item);		
+				}
+				pagingBar.orgData=dataList;
+				pagingBar.dataBind(true);
+				
+			}
+			public function createDataGrid(nameArray:Array):void {
+				var vbox:VBox = new VBox();
+				vbox.width = 978;
+				vbox.height = 480;
+				addChild(vbox);
+				
+				dg = new DataGrid();
+				dg.width = 978;
+				dg.height = 440;
+				dg.horizontalScrollPolicy = ScrollPolicy.AUTO;
+				//dg.dataProvider = historyData;
+				
+				var column:DataGridColumn = new DataGridColumn();
+				column.headerText = "时间";
+				column.dataField = "@DataTime";
+				column.width = 140;
+				dg.columns = dg.columns.concat(column);
+				
+				for each(var object:Object in nameArray) {
+					var column:DataGridColumn = new DataGridColumn();
+					column.headerText = object.name;
+					column.dataField = "@" + object.data;
+					column.labelFunction = labelFunction;
+					column.width = 140;
+					dg.columns = dg.columns.concat(column);
+				} 
+				vbox.addChild(dg);
+				
+				pagingBar = new PagingBar();
+				pagingBar.pageSize = 5;
+				pagingBar.dataGrid = dg;
+				pagingBar.pagingFunction = pagingFunction;
+				vbox.addChild(pagingBar);
+			}
+			private function labelFunction(data:Object, column:DataGridColumn):String {
+				var unit:String = "";
+				var df:String = column.dataField;
+				if(df == "@ProductBox_WT" || df == "@OfferBox_WT") {
+					unit = "%"
+				} else if(df == "@SunLightIntension" ) {
+					unit = "W/m2";
+				} else if(df == "@Collector1_Out_flow" || df == "@Collector2_Out_flow" || df == "@Collector3_Out_flow") {
+					unit = "升";
+				} else if(df == "@AirHeat_Elec" || df == "@ElecHeat_Elec" || df == "@Total_Elec" ) {
+					unit = "Kwh";
+				} else if(df == "@solar_energy") {
+					unit = "Kcal";
+				} else if(df == "@Environment_T" || df == "@Collector1_In_T" || df == "@Collector2_In_T" 
+					|| df == "@Collector3_In_T" || df == "@OfferBox_T" || df == "@ProductBox_T"
+					|| df == "@Collector1_Out_T" || df == "@Collector2_Out_T" || df == "@Collector3_Out_T" 
+					|| df == "@ProductBox_T" || df == "@ReturnPipe_T" || df == "@OfferBox_WT" ) {
+					unit = "度";
+				} else if(df == "@OfferBox_WL" || df == "@ProductBox_WL") {
+					unit = "%";
+				}
+				return data[column.dataField].toString() + unit;
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSW_HISTORYDATA_DISPLAY_VIEW));
+			}
+			// 用户想看下一页时执行
+			private function pagingFunction(pageIndex:int,pageSize:int):void{
+	            this.pageIndex = pageIndex.toString();
+	            this.pageSize = pageSize.toString();
+	            this.dispatchEvent(new Event(NEXT_PAGE));
+	        }
+	        
+		]]>
+	</mx:Script>
+	<mx:ToggleButtonBar>
+		<mx:dataProvider>
+			<mx:Array>
+				<mx:String>数据模式</mx:String>
+				<mx:String>图表模式</mx:String>
+			</mx:Array>
+		</mx:dataProvider>
+	</mx:ToggleButtonBar>
+</mx:TitleWindow>

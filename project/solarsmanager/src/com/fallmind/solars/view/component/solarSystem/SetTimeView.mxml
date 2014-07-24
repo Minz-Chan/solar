@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.model.CheckProxy.TimeData;
+			public static const CLOSE_SET_TIME_VIEW:String = "CloseSetTimeView";
+			public static const SAVE_TIME:String = "SaveTime";
+			import com.fallmind.solars.model.Convert;
+			import mx.controls.Alert;
+			
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_SET_TIME_VIEW));
+			}
+			public function colorBack():void {
+				yearText.setStyle("color", "0x000000");
+				monthText.setStyle("color", "0x000000");
+				dayText.setStyle("color", "0x000000");
+				hourText.setStyle("color", "0x000000");
+				minuteText.setStyle("color", "0x000000");
+				secondText.setStyle("color", "0x000000");
+			}
+			public function setData(data:String):void {
+				if(data == "") {
+					return;
+				}
+				var myPattern:RegExp = /T/;
+				data = data.replace(myPattern, " ");
+				var date:Date = Convert.convertToDate(data);
+				yearText.text = date.fullYear.toString();
+				monthText.text = (date.getMonth() + 1).toString();
+				dayText.text = date.date.toString();
+				hourText.text = date.getHours().toString();
+				minuteText.text = date.getMinutes().toString();
+				secondText.text = date.getSeconds().toString();
+			}
+			public function checkData(data:String):void {
+				var myPattern:RegExp = /T/;
+				data = data.replace(myPattern, " ");
+				var date:Date = Convert.convertToDate(data);
+				if(yearText.text != date.fullYear.toString()) {
+					yearText.htmlText = "<font color='#FF0000'>" + date.fullYear.toString() + "</font><br>";
+				} else {
+					yearText.htmlText = "<font color='#000000'>" + date.fullYear.toString() + "</font><br>";
+				}
+				if( monthText.text != (date.getMonth() + 1).toString()) {
+					monthText.htmlText =  "<font color='#FF0000'>" + (date.getMonth() + 1).toString() + "</font><br>";
+				} else {
+					monthText.htmlText =  "<font color='#000000'>" + (date.getMonth() + 1).toString() + "</font><br>";
+				}
+				if( dayText.text != date.date.toString()) {
+					dayText.htmlText = "<font color='#FF0000'>" + date.date.toString() + "</font><br>";
+				} else {
+					dayText.htmlText = "<font color='#000000'>" + date.date.toString() + "</font><br>";
+				}
+				if(hourText.text != date.getHours().toString()) {
+					hourText.htmlText = "<font color='#FF0000'>" + date.getHours().toString() + "</font><br>";
+				} else {
+					hourText.htmlText = "<font color='#000000'>" + date.getHours().toString() + "</font><br>";
+				}
+				if(minuteText.text != date.getMinutes().toString()) {
+					minuteText.htmlText = "<font color='#FF0000'>" + date.getMinutes().toString() + "</font><br>";
+				} else {
+					minuteText.htmlText = "<font color='#000000'>" + date.getMinutes().toString() + "</font><br>";
+				}
+				if(secondText.text != date.getSeconds().toString()) {
+					secondText.htmlText = "<font color='#FF0000'>" + date.getSeconds().toString() + "</font><br>";
+				} else {
+					secondText.htmlText = "<font color='#000000'>" + date.getSeconds().toString() + "</font><br>";
+				}
+			}
+			private function showCurrentTime():void {
+				var date:Date = new Date();
+				yearText.text = date.fullYear.toString();
+				monthText.text = (date.month + 1).toString();
+				dayText.text = date.date.toString();
+				hourText.text = date.hours.toString();
+				minuteText.text = date.minutes.toString();
+				secondText.text = date.seconds.toString();
+			}
+			private function saveHandler():void {
+				if(yearText.text == "" ||
+					monthText.text  == "" ||
+					dayText.text  == "" ||
+					hourText.text  == "" ||
+					minuteText.text  == "" ||
+					secondText.text  == "" ) {
+						Alert.show("设置数据不能为空");
+						return;
+					}
+				if(int(yearText.text) < 0 || yearText.text.length > 4) {
+					Alert.show("年份输入格式有误");
+					return;
+				} 
+				if(int(monthText.text) < 0 || int(monthText.text) > 12) {
+					Alert.show("月份输入格式有误");
+					return;
+				}
+				if(int(dayText.text) < 0 || int(dayText.text) > 31) {
+					Alert.show("日期输入格式有误");
+					return;
+				}
+				if(int(hourText.text) < 0 || int(hourText.text) > 24) {
+					Alert.show("小时输入格式有误");
+					return;
+				}
+				if(int(minuteText.text) < 0 || int(minuteText.text) > 60) {
+					Alert.show("分钟输入格式有误");
+					return;
+				}
+				if(int(secondText.text) < 0 || int(secondText.text) > 60) {
+					Alert.show("秒输入格式有误");
+					return;
+				}
+				this.dispatchEvent(new Event(SAVE_TIME));
+			}
+			public function setState(state:int):void {
+				switch(state) {
+					case 0:
+						stateText.htmlText = "<font color='#000000'>设置系统时间</font><br>";
+						textInputEnable(true);
+						break;
+					case 1:
+						stateText.htmlText = "<font color='#FF0000'>正在设置，请耐心等待</font><br>";
+						textInputEnable(false);
+						break;
+					case 2:
+						stateText.htmlText = "<font color='#FF0000'>设置超时，以下为上一次操作数据</font><br>";
+						textInputEnable(true);
+						break;
+				}
+			}
+			public function setFromTimeData(data:TimeData):void {
+				yearText.text = data.yearText;
+				monthText.text = data.monthText;
+				dayText.text = data.dayText;
+				hourText.text = data.hourText;
+				minuteText.text = data.minuteText;
+				secondText.text = data.secondText;
+			}
+			private function textInputEnable(b:Boolean):void {
+				yearText.editable = b;
+				monthText.editable = b;
+				dayText.editable = b;
+				hourText.editable = b;
+				minuteText.editable = b;
+				secondText.editable = b;
+				
+				saveButton.enabled = b;
+				getTimeButton.enabled = b;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="vbox1" top="10" left="10" right="10" bottom="10">
+		<mx:Text id="stateText" text=" "/>
+		<mx:HBox>
+			<mx:TextInput id="yearText" width="60" restrict="0-9"/>
+			<mx:Label text="年"/>
+			<mx:TextInput id="monthText" width="60" restrict="0-9"/>
+			<mx:Label text="月"/>
+			<mx:TextInput id="dayText" width="60" restrict="0-9"/>
+			<mx:Label text="日"/>
+			<mx:TextInput id="hourText" width="60" restrict="0-9"/>
+			<mx:Label text="时"/>
+			<mx:TextInput id="minuteText" width="60" restrict="0-9"/>
+			<mx:Label text="分"/>
+			<mx:TextInput id="secondText" width="60" restrict="0-9"/>
+			<mx:Label text="秒"/>
+		</mx:HBox>
+		<mx:Canvas width="100%">
+		<mx:Button label="获取时间" click="showCurrentTime()" id="getTimeButton"/>
+		<mx:HBox right="0">
+			<mx:Button label="保存" click="saveHandler()" id="saveButton"/>
+			<mx:Button label="返回" click="closeWindow()" id="backButton"/>
+		</mx:HBox>
+	</mx:Canvas>
+	</mx:VBox>
+	
+	
+	
+	
+</mx:TitleWindow>

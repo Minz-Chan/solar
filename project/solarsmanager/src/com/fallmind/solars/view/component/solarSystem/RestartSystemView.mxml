@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			public static const CONFIRM_RESTART_SYSTEM:String = "ConfirmRestartSystem";
+			public static const CLOSE_RESTART_SYSTEM:String = "CloseRestartSystem";
+			private function confirmRestart():void {
+				this.dispatchEvent(new Event(CONFIRM_RESTART_SYSTEM));
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_RESTART_SYSTEM));
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" left="10" right="10" bottom="10">
+		<mx:Text id="stateText" text="确定要重启太阳能系统 ?"/>
+		<mx:HBox>
+			<mx:Button label="重启" click="confirmRestart()" id="restartButton"/>
+			<mx:Button label="返回" click="closeWindow()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

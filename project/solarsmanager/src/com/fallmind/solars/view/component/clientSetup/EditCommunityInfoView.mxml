@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	showCloseButton="true" close="closeWindow()">
+<mx:VBox horizontalAlign="center" bottom="10" top="10" left="10" right="10">
+	<mx:HBox>
+		<mx:Form x="10" y="10" fontSize="12">
+		<mx:FormItem label="小区名字" required="true">
+			<mx:TextInput id="communityName"/>
+		</mx:FormItem>
+		<mx:FormItem label="小区密码" required="true">
+			<mx:TextInput id="communityPassword" restrict="0-9a-zA-Z"/>
+		</mx:FormItem>
+		<mx:FormItem label="小区地址">
+			<mx:TextInput id="communityAddress"/>
+		</mx:FormItem>
+		<mx:FormItem label="小区电话">
+			<mx:TextInput id="communityPhone"/>
+		</mx:FormItem>
+		<mx:FormItem label="主管单位">
+			<mx:TextInput id="manageUnit"/>
+		</mx:FormItem>
+		<mx:FormItem label="主管人">
+			<mx:TextInput id="manager"/>
+		</mx:FormItem>
+		<mx:FormItem label="主管人电话">
+			<mx:TextInput id="managerPhone"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:VBox>
+			<mx:Label text="照片"/>
+			<mx:HBox>
+				<mx:Button label="浏览" click="brow()"/>
+				<mx:Button label="上传" click="upload()"/>
+			</mx:HBox>
+			<mx:TextInput text="{stateText}" width="160" editable="false"/>
+			<mx:Image id="imageField" width="160" height="190"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Button label="保存" fontSize="12" click="saveCommunityInfo()" width="60"/>
+		<mx:Button label="取消" fontSize="12" click="closeWindow()" width="60"/>
+	</mx:HBox>
+	
+	
+</mx:VBox>
+
+<mx:Script>
+	<![CDATA[
+		import mx.managers.PopUpManager;
+		public static const SAVE_COMMUNITYINFO:String = "SaveCommunityInfo";
+		public static const CLOSE_WINDOW:String = "CloseWindow";
+		public static const BROW_COMMUNITY_IMAGE:String = "BrowCommunityImage";
+		public static const UPLOAD_COMMUNITY_IMAGE:String = "UploadCommunityImage";
+		[Bindable]
+		public var stateText:String;
+		private function saveCommunityInfo():void {
+			
+			this.dispatchEvent(new Event(SAVE_COMMUNITYINFO));
+		}
+		private function closeWindow():void {
+			this.dispatchEvent(new Event(CLOSE_WINDOW));
+		}
+		private function brow():void {
+			this.dispatchEvent(new Event(BROW_COMMUNITY_IMAGE));
+		}
+		private function upload():void {
+			this.dispatchEvent(new Event(UPLOAD_COMMUNITY_IMAGE));
+		}
+	]]>
+</mx:Script>
+</mx:TitleWindow>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow title="警告" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()">
+	<mx:VBox top="10" left="10" bottom="10" right="10">
+	<mx:HBox>
+		<mx:Button label="删除单个" click="deleteAlarm()"/>
+		<mx:Button label="删除全部" click="deleteAllAlarm()"/>
+	</mx:HBox>
+	
+	<mx:DataGrid id="alarmDataGrid" dataProvider="{alarmData}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="国家" dataField="country"/>
+			<mx:DataGridColumn headerText="省" dataField="province"/>
+			<mx:DataGridColumn headerText="市" dataField="city"/>
+			<mx:DataGridColumn headerText="小区" dataField="community"/>
+			<mx:DataGridColumn headerText="系统名" dataField="systemName"/>
+			<mx:DataGridColumn headerText="时间" dataField="alarmTime" width="108"/>
+			<mx:DataGridColumn headerText="警告名称" dataField="alarmName" width="350"/>
+		</mx:columns>
+	</mx:DataGrid>
+	</mx:VBox>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			//[Bindable]
+			//public var alarmData:XMLList;
+			
+			[Bindable]
+			public var alarmData:Array;
+			
+			public static const DELETE_ALARM:String = "DeleteAlarm";
+			public static const CLOSE_ALARM_VIEW:String = "CloseAlarmView";
+			public static const DELETE_ALL_ALARM:String = "DeleteAllAlarm";
+			/**
+			 * 点击已查阅按钮后删除相应的警告条目
+			 */
+			private function deleteAlarm():void {
+				if(alarmDataGrid.selectedItem == null) {
+					Alert.show("请选择一个警告");
+					return;
+				}
+				this.dispatchEvent(new Event(DELETE_ALARM));
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_ALARM_VIEW));
+			}
+			private function deleteAllAlarm():void {
+				Alert.show("确定要删除全部警告？", "警告", Alert.YES | Alert.NO, null, confirmDelete);
+			}
+			private function confirmDelete(e:CloseEvent):void {
+				switch(e.detail) {
+					case Alert.YES:
+						this.dispatchEvent(new Event(DELETE_ALL_ALARM));
+						break;
+					case Alert.NO:
+						break;
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

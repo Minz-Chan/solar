@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.model.bussiness.ConfigManager;
+			import mx.events.ItemClickEvent;
+			
+			public static const CLOSE_MANUAL_VIEW:String = "CloseManualView";
+			//public static const SAVE_MANUAL_OPERATION:String = "SaveManualOperation";
+			public static const ADD_WATER:String = "AddWater";
+			public static const ADD_TEMP:String = "AddTemp";
+			
+			public var waterOpen:Boolean = false;
+			public var tempOpen:Boolean = false;
+			
+			private var waterOrderSuccess:Boolean = false;
+			private var tempOrderSuccess:Boolean = false;
+			
+			private var waterOrderOverTime:Boolean = false;
+			private var tempOrderOverTime:Boolean = false; 
+			
+			public static const ELEC_ENABLE_AIR_ENABLE:int = 0;
+			public static const ELEC_ENABLE_AIR_DISABLE:int = 1;
+			public static const ELEC_DISABLE_AIR_DISABLE:int = 2;
+			public static const ELEC_DISABLE_AIR_ENABLE:int = 3;
+			
+			public function setAddTempState(pumpState:int):void {
+				switch(pumpState) {
+					case ELEC_ENABLE_AIR_ENABLE:
+						addTempBox.enabled = true;
+						startElec.enabled = true;
+						break;
+					case ELEC_DISABLE_AIR_ENABLE:
+					case ELEC_ENABLE_AIR_DISABLE:
+						addTempBox.enabled = true;
+						startElec.enabled = false;
+						break;
+					case ELEC_DISABLE_AIR_DISABLE:
+						addTempBox.enabled = false;
+						break;
+				}
+			}
+			
+			private var config:ConfigManager = ConfigManager.getManageManager();
+			
+			private function addWater():void {
+				if(maxWater.text == "") {
+					Alert.show("请填写最大加水上限值");
+					return;
+				}
+				if(int(maxWater.text) < config.lowestLevel || int(maxWater.text) > config.highestLevel) {
+					Alert.show("最大加水上限值必须在" + config.lowestLevel + "和" + config.highestLevel + "之间!");
+					return;
+				}
+				this.dispatchEvent(new Event(ADD_WATER));
+			}
+			private function addTemp():void {
+				if(maxTemp.text == "") {
+					Alert.show("请填写最大加热上限值");
+					return;
+				}
+				if(int(maxTemp.text) < config.lowestTemp || int(maxTemp.text) > config.highestTemp) {
+					Alert.show("最大加热上限值必须在" + config.lowestTemp + "和" + config.highestTemp + "之间!");
+					return;
+				}
+				this.dispatchEvent(new Event(ADD_TEMP));
+			}
+			
+			public function setState(order:String, state:int):void {
+				if(order == "water") {
+					switch(state) {
+						case 0:
+							stateText.text = "";
+							break;
+						case 1:
+							
+							waterButton.enabled = false;
+							maxWater.enabled = false;
+							stateText.htmlText = "<font color='#FF0000'>正在发送加水指令，请耐心等待</font><br>";
+							break;
+						case 2:
+							
+							waterButton.enabled = true;
+							maxWater.enabled = true;
+							//stateText.text = "加水指令发送超时";
+							stateText.htmlText = "<font color='#FF0000'>加水指令超时</font><br>";
+							break;
+						case 3:
+							waterButton.enabled = true;
+							maxWater.enabled = true;
+							stateText.htmlText = "<font color='#FF0000'>指令发送失败</font><br>";
+							break;
+					}
+				}
+				if(order == "temp") {
+					switch(state) {
+						case 0:
+							stateText.text = "";
+							break;
+						case 1:	
+							tempButton.enabled = false;
+							maxTemp.enabled = false;
+							stateText.htmlText = "<font color='#FF0000'>正在发送加热指令，请耐心等待</font><br>";
+							break;
+						case 2:
+							tempButton.enabled = true;
+							maxTemp.enabled = true;
+							stateText.htmlText = "<font color='#FF0000'>加热指令发送超时</font><br>";
+							break;
+						case 3:
+							tempButton.enabled = true;
+							maxTemp.enabled = true;
+							stateText.htmlText = "<font color='#FF0000'>指令发送失败</font><br>";
+							break;
+					}
+				}
+			}
+			public function textInputEnable(b:Boolean):void {
+				vbox1.enabled = b;
+			}
+			
+			
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_MANUAL_VIEW));
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox fontSize="12" top="10" bottom="10" left="10" right="10" id="vbox1">
+		<mx:Text id="stateText" text="手动控制"/>
+		<mx:HBox>
+			<mx:Button label="手动加水" id="waterButton" click="addWater()"/>
+       		<mx:Label text="水位上限值（%）" width="112"/>
+        	<mx:TextInput id="maxWater" width="60" restrict="0-9"/>
+        </mx:HBox>
+        <mx:HBox id="addTempBox">
+			<mx:Button label="手动加热" id="tempButton" click="addTemp()"/>
+        	<mx:Label text="温度上限值（度）" width="112"/>
+        	<mx:TextInput id="maxTemp" width="60" restrict="0-9"/>
+        	<mx:CheckBox label="开启电加热" id="startElec"/>
+        </mx:HBox>
+        <mx:HBox horizontalAlign="center" width="100%">
+        	<mx:Button label="返回" click="closeWindow()"/>
+        </mx:HBox>
+		
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

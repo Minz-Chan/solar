@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	xmlns:component="com.fallmind.solars.view.component.*"
+	xmlns:main="com.ccac.ibs.ui.main.*" preinitialize="preinit()"
+	creationComplete="init()" xmlns:controls="com.ccac.ibs.controls.*">
+	<mx:Style source='assets/css/Main.css'/>
+	<mx:Style>
+        FormItem {
+            labelStyleName: customTextAlignLabel;
+        }
+
+        .customTextAlignLabel {
+            textAlign: left;
+        }
+    </mx:Style>
+	<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.model.bussiness.ConfigManager;
+			import com.fallmind.solars.ApplicationFacade;
+			import flash.display.Stage;
+			
+			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
+			public var PORTAL_REDIRECT:String = "PortalRedirect";
+			private function preinit():void {
+				var configManager:ConfigManager = ConfigManager.getManageManager();
+			}
+			private function init():void {
+				facade.startup(this);
+
+				this.dispatchEvent(new Event(PORTAL_REDIRECT));
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Canvas width="1024" height="100%" horizontalCenter="0" verticalCenter="0">
+		<component:LoginView id="loginView" visible="true" width="673" height="440" horizontalCenter="0" verticalCenter="0"/>
+		<component:PortalView id="portalView" visible="false" width="673" height="440" horizontalCenter="0" verticalCenter="0"/>
+		<component:MenuBarView id="menuBarView" visible="false" bottom="10" top="40"/>
+		<component:StatusBarView id="statusBar" visible="false" width="100%" top="0"/>
+	</mx:Canvas>
+	
+</mx:Application>

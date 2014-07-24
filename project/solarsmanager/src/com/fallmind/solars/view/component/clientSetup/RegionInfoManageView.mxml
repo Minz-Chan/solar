@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" label="地域信息管理" width="100%" height="100%" fontSize="12">
+	<mx:Label x="0" y="0" text="地域信息管理" fontSize="16"/>
+	<mx:HBox left="10" right="10" bottom="10" top="30" fontSize="14">
+		<mx:VBox height="100%" width="33%">
+			<mx:Label text="添加国家"/>
+			<mx:HBox width="100%">
+				<mx:TextInput id="countryInput" width="90"/>
+				<mx:Button label="添加" width="60" id="addCountryBtn" click="addRegionHandler(event)" fontSize="12"/>
+				<mx:Button label="删除" width="60" click="deleteCountryHandler(event)" fontSize="12"/>
+			</mx:HBox>
+			<mx:List id="countryList" width="100%" height="100%" dataProvider="{countryData}" labelField="@AreaName" change="clickHandler(event)"></mx:List>
+		</mx:VBox>
+		<mx:VBox height="100%" width="33%">
+			<mx:Label text="添加省份/直辖市"/>
+			<mx:HBox width="100%">
+				<mx:TextInput id="provinceInput" width="90"/>
+				<mx:Button label="添加" width="60" id="addProvinceBtn" click="addRegionHandler(event)" fontSize="12"/>
+				<mx:Button label="删除" width="60" click="deleteProvinceHandler(event)" fontSize="12"/>
+			</mx:HBox>
+			<mx:List id="provinceList" width="100%" height="100%" dataProvider="{provinceData}" labelField="@AreaName" change="clickHandler(event)"></mx:List>
+		</mx:VBox>
+		<mx:VBox height="100%" width="33%">
+			<mx:Label text="添加市/县"/>
+			<mx:HBox width="100%">
+				<mx:TextInput id="cityInput" width="90"/>
+				<mx:Button label="添加" id="addCityBtn" width="60" click="addRegionHandler(event)" fontSize="12"/>
+				<mx:Button label="删除" width="60" click="deleteCityHandler(event)" fontSize="12"/>
+			</mx:HBox>
+			<mx:List id="cityList" width="100%" height="100%" dataProvider="{cityData}" labelField="@AreaName" change="clickHandler(event)"></mx:List>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			
+			[Bindable]
+			public var countryData:XMLList;
+			[Bindable]
+			public var provinceData:XMLList;
+			[Bindable]
+			public var cityData:XMLList;
+			
+			public var totalData:XML;
+			
+			public static const ADD_COUNTRY:String = "AddCountry";
+			public static const ADD_PROVINCE:String = "AddProvince";
+			public static const ADD_CITY:String = "AddCity";
+			public static const DELETE_REGION:String = "DeleteRegion";
+			
+			public var deleteRegionID:String;
+			public var deleteRegionType:String;
+
+			private function clickHandler(e:Event):void {
+				if(e.target == countryList) {
+					provinceData = totalData.row.(@BelongRel == countryList.selectedItem.@AreaID);
+					cityData = null;
+				} else if(e.target == provinceList) {
+					cityData = totalData.row.(@BelongRel == provinceList.selectedItem.@AreaID);
+				}
+			}
+			private function addRegionHandler(e:Event):void {
+				if(e.target == addCountryBtn) {
+					this.dispatchEvent(new Event(ADD_COUNTRY));
+				} else if(e.target == addProvinceBtn) {
+					if(countryList.selectedItem == null) {
+						Alert.show("先选择一个国家");
+						return;
+					}
+					this.dispatchEvent(new Event(ADD_PROVINCE));
+				} else if(e.target == addCityBtn) {
+					if(provinceList.selectedItem == null) {
+						Alert.show("先选择一个省份");
+						return;
+					}
+					this.dispatchEvent(new Event(ADD_CITY));
+				}
+				
+			}
+			private function deleteCountryHandler(e:Event):void {
+				if(countryList.selectedItem == null) {
+					Alert.show("选择一个区域");
+					return;
+				}
+				Alert.show("确认删除？删除以后会丢失所有包含在改区域下的小区信息！", "警告", Alert.YES | Alert.NO, this, deleteCountry);
+			}
+			private function deleteProvinceHandler(e:Event):void {
+				if(provinceList.selectedItem == null) {
+					Alert.show("选择一个区域");
+					return;
+				}
+				Alert.show("确认删除？删除以后会丢失所有包含在改区域下的小区信息！", "警告", Alert.YES | Alert.NO, this, deleteProvince);
+				//deleteRegionID = provinceList.selectedItem.@AreaID;
+				//this.dispatchEvent(new Event(DELETE_REGION));
+			}
+			private function deleteCityHandler(e:Event):void {
+				if(cityList.selectedItem == null) {
+					Alert.show("选择一个区域");
+					return;
+				}
+				Alert.show("确认删除？删除以后会丢失所有包含在改区域下的小区信息！", "警告", Alert.YES | Alert.NO, this, deleteCity);
+				//deleteRegionID = cityList.selectedItem.@AreaID;
+				//this.dispatchEvent(new Event(DELETE_REGION));
+			}
+			private function deleteCountry(e:CloseEvent):void {
+				switch(e.detail) {
+					case Alert.YES:
+						deleteRegionID = countryList.selectedItem.@AreaID;
+						deleteRegionType = countryList.selectedItem.@TypeLevel;
+						this.dispatchEvent(new Event(DELETE_REGION));
+					case Alert.NO:
+						break;
+				}
+				
+			}
+			private function deleteProvince(e:CloseEvent):void {
+				switch(e.detail) {
+					case Alert.YES:
+						deleteRegionID = provinceList.selectedItem.@AreaID;
+						deleteRegionType = provinceList.selectedItem.@TypeLevel;
+						this.dispatchEvent(new Event(DELETE_REGION));
+					case Alert.NO:
+						break;
+				}
+				
+			}
+			private function deleteCity(e:CloseEvent):void {
+				switch(e.detail) {
+					case Alert.YES:
+						deleteRegionID = cityList.selectedItem.@AreaID;
+						deleteRegionType = cityList.selectedItem.@TypeLevel;
+						this.dispatchEvent(new Event(DELETE_REGION));
+					case Alert.NO:
+						break;
+				}
+				
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

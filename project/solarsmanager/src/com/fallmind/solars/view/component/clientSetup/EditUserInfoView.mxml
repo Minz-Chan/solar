@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	showCloseButton="true" close="closeWindow()">
+<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.view.clientMediator.CommunityData;
+			import mx.events.DropdownEvent;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			
+			public static const CLOSE_EDIT_USER_INFO_VIEW:String = "CloseEditUserInfoView";
+			public static const HIGH_RIGHT:int = 3;
+			public static const LOW_RIGHT:int = 1;
+			public static const MEDIUM_RIGHT:int = 2;
+			
+			
+			public static const SAVE_USER_INFO:String = "SaveUserInfo";
+			
+			public static const COUNTRY_TYPE:String = "1";
+			public static const PROVINCE_TYPE:String = "2";
+			public static const CITY_TYPE:String = "3";
+			public static const DIRECT_CITY_TYPE:String = "4";
+			[Bindable]
+			public var countryButtonData:XMLList;
+			[Bindable]
+			public var provinceButtonData:XMLList;
+			[Bindable]
+			public var cityButtonData:XMLList;
+			//[Bindable]
+			//public var communityData:XMLList;
+			
+			[Bindable]
+			public var communityButtonData:Array = new Array;
+			
+			[Bindable]
+			public var totalCommunity:Array;
+			
+			public var totalCommunityData:XMLList;
+			
+			public var currentUserTypeID:String;
+			
+			public var totalArea:XML;
+			
+			private function closeWindow():void {
+				PopUpManager.removePopUp(this);
+				this.dispatchEvent(new Event(CLOSE_EDIT_USER_INFO_VIEW));
+			}
+			public function closeHandler(e:Event):void {
+				if( ComboBox(e.target).selectedItem == null) {
+					return;
+				}
+				if( ComboBox(e.target).selectedItem.@typeID == COUNTRY_TYPE) {
+					provinceButtonData = countryButtonData.(@name==ComboBox(e.target).selectedItem.@name).Area;
+					//provinceButtonData = countryButtonData.Area.(
+					cityButtonData = provinceButtonData.(@name==provinceBox.selectedItem.@name).Area;
+					//communityButtonData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+					//solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@id);
+					communityButtonData.splice(0, communityButtonData.length);
+					for each(var item:CommunityData in totalCommunity) {
+						if(item.city == cityBox.selectedItem.@name) {
+							communityButtonData.push(item);
+						}
+					}
+					selectedCommunityDataGrid.invalidateList();
+					//selectedCommunityDataGrid.invalidateDisplayList();
+				} else if( ComboBox(e.target).selectedItem.@typeID == PROVINCE_TYPE ) {
+					cityButtonData = provinceButtonData.(@name==ComboBox(e.target).selectedItem.@name).Area;
+					//communityButtonData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+					//solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@id);
+					communityButtonData.splice(0, communityButtonData.length);
+					for each(var item:CommunityData in totalCommunity) {
+						if(item.city == cityBox.selectedItem.@name) {
+							communityButtonData.push(item);
+						}
+					}
+					selectedCommunityDataGrid.invalidateList();
+				} else if( ComboBox(e.target).selectedItem.@typeID == CITY_TYPE) {
+					if( cityButtonData != null) {
+						//communityButtonData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+						//solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@id);
+						communityButtonData.splice(0, communityButtonData.length);
+						for each(var item:CommunityData in totalCommunity) {
+							if(item.city == cityBox.selectedItem.@name) {
+								communityButtonData.push(item);
+							}
+						}
+						selectedCommunityDataGrid.invalidateList();
+					}
+				} else if( ComboBox(e.target).selectedItem.@typeID == DIRECT_CITY_TYPE) {
+					cityButtonData = null;
+					//communityButtonData = provinceButtonData.(@name==provinceBox.selectedItem.@name).CommunityInfo;
+					//solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@id);
+					communityButtonData.splice(0, communityButtonData.length);
+					for each(var item:CommunityData in totalCommunity) {
+						if(item.city == cityBox.selectedItem.@name) {
+							communityButtonData.push(item);
+						}
+					}
+					selectedCommunityDataGrid.invalidateList();
+				}
+			}
+			/*private function closeHandler(e:DropdownEvent):void {
+				trace( ComboBox(e.target).selectedItem.@name );
+				trace( ComboBox(e.target).selectedItem.@type);
+				if( ComboBox(e.target).selectedItem.@typeID == COUNTRY_TYPE) {
+					provinceButtonData = countryButtonData.(@name==ComboBox(e.target).selectedItem.@name).Area;
+					cityButtonData = provinceButtonData.(@name==provinceBox.selectedItem.@name).Area;
+					communityData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+				} else if( ComboBox(e.target).selectedItem.@typeID == PROVINCE_TYPE ) {
+					cityButtonData = provinceButtonData.(@name==ComboBox(e.target).selectedItem.@name).Area;
+					communityData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+				} else if( ComboBox(e.target).selectedItem.@typeID == CITY_TYPE) {
+					if( cityButtonData != null) {
+						communityData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+					}
+				} else if( ComboBox(e.target).selectedItem.@typeID == DIRECT_CITY_TYPE) {
+					cityButtonData = null;
+					communityData = provinceButtonData.(@name==provinceBox.selectedItem.@name).CommunityInfo;
+				}
+			}*/
+			private function saveHandler():void {
+				this.dispatchEvent(new Event(SAVE_USER_INFO));
+			}
+			public function checkBoxClickHandler(obj:Object):void {
+				if(obj.cBox.selected){  
+					communityButtonData[selectedCommunityDataGrid.selectedIndex].selected=true;  
+				} else {  
+					communityButtonData[selectedCommunityDataGrid.selectedIndex].selected=false;  
+				}  
+			}
+			public function radioButtonClickHandler(obj:Object):void {
+				if(obj.highRight.selected) {
+					if(int(currentUserTypeID) >= 3 ) {
+						Alert.show("该类型管理员不能有这个权限", "警告");
+						return;
+					}
+					if(HIGH_RIGHT > communityButtonData[selectedCommunityDataGrid.selectedIndex].highestRightID) {
+						Alert.show("您的权限不足", "警告");
+						return;
+					}
+					for each(var c:CommunityData in totalCommunity) {
+						if(c.id == CommunityData(communityButtonData[selectedCommunityDataGrid.selectedIndex]).id) {
+							c.rightID = HIGH_RIGHT;
+							c.right = "厂家权限";
+						}
+					}
+					//totalCommunity[selectedCommunityDataGrid.selectedIndex].rightID = HIGH_RIGHT;
+					//totalCommunity[selectedCommunityDataGrid.selectedIndex].right = "厂家权限";
+				} else if(obj.mediumRight.selected) {
+					if(int(currentUserTypeID) >= 4) { // 政府用户和普通操作员不能有这种权限
+						Alert.show("该类型管理员不能有这个权限", "警告");
+						return;
+					}
+					if(MEDIUM_RIGHT > communityButtonData[selectedCommunityDataGrid.selectedIndex].highestRightID) {
+						Alert.show("您的权限不足", "警告");
+						return;
+					}
+					for each(var c:CommunityData in totalCommunity) {
+						if(c.id == CommunityData(communityButtonData[selectedCommunityDataGrid.selectedIndex]).id) {
+							c.rightID = MEDIUM_RIGHT;
+							c.right = "主控操作";
+						}
+					}
+					//totalCommunity[selectedCommunityDataGrid.selectedIndex].rightID = MEDIUM_RIGHT;
+					//totalCommunity[selectedCommunityDataGrid.selectedIndex].right = "主控操作";
+				} else if(obj.lowRight.selected) {
+					if(LOW_RIGHT > totalCommunity[selectedCommunityDataGrid.selectedIndex].highestRightID) {
+						Alert.show("您的权限不足", "警告");
+						return;
+					}
+					for each(var c:CommunityData in totalCommunity) {
+						if(c.id == CommunityData(communityButtonData[selectedCommunityDataGrid.selectedIndex]).id) {
+							c.rightID = LOW_RIGHT;
+							c.right = "基本查询";
+						}
+					}
+					//totalCommunity[selectedCommunityDataGrid.selectedIndex].rightID = LOW_RIGHT;
+					//totalCommunity[selectedCommunityDataGrid.selectedIndex].right = "普通查询";
+				}
+			}
+		]]>
+</mx:Script>
+<mx:VBox horizontalAlign="center" fontSize="12" top="10" left="10" right="10" bottom="10">
+	<mx:HBox>
+		<mx:ComboBox id="countryBox" labelField="@name" close="closeHandler(event)" dataProvider="{countryButtonData}"/>
+		<mx:ComboBox id="provinceBox" labelField="@name" close="closeHandler(event)" dataProvider="{provinceButtonData}"/>
+		<mx:ComboBox id="cityBox" labelField="@name" close="closeHandler(event)" dataProvider="{cityButtonData}"/>
+	</mx:HBox>
+	<mx:DataGrid fontSize="12" id="selectedCommunityDataGrid" dataProvider="{communityButtonData}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="选择">  
+				<mx:itemRenderer>  
+					<mx:Component>  
+					<mx:HBox>
+						<mx:CheckBox id="cBox" selected="{data.selected}" click="outerDocument.checkBoxClickHandler(this);"/>
+					</mx:HBox>
+					</mx:Component>  
+				</mx:itemRenderer>  
+			</mx:DataGridColumn>   
+			<!--mx:DataGridColumn headerText="省" dataField="province"/>
+			<mx:DataGridColumn headerText="市" dataField="city"/-->
+			<mx:DataGridColumn headerText="小区" dataField="community"/>
+			<mx:DataGridColumn headerText="权限" width="250">  
+				<mx:itemRenderer>  
+					<mx:Component>  
+					<mx:HBox>
+						<mx:RadioButton label="厂家权限" fontSize="12" id="highRight" groupName="right" click="outerDocument.radioButtonClickHandler(this);"/>
+						<mx:RadioButton label="主控操作" fontSize="12" id="mediumRight" groupName="right" click="outerDocument.radioButtonClickHandler(this);"/>
+						<mx:RadioButton label="基本查询" fontSize="12" id="lowRight" groupName="right" click="outerDocument.radioButtonClickHandler(this);"/>
+					</mx:HBox>
+					</mx:Component>  
+				</mx:itemRenderer>  
+			</mx:DataGridColumn>   
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:HBox horizontalAlign="center" fontSize="12">
+		<mx:Button label="确定" click="saveHandler()" width="60"/>
+		<mx:Button label="取消" click="closeWindow()" width="60"/>
+	</mx:HBox>
+</mx:VBox>
+</mx:TitleWindow>

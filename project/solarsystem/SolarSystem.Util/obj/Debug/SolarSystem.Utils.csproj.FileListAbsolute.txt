@@ -1,0 +1,10 @@
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.Util\bin\Debug\SolarSystem.Util.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.Util\bin\Debug\SolarSystem.Util.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.Util\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.Util\obj\Debug\SolarSystem.Util.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.Util\obj\Debug\SolarSystem.Util.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Util\bin\Debug\SolarSystem.Util.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Util\bin\Debug\SolarSystem.Util.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Util\obj\Debug\ResolveAssemblyReference.cache
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Util\obj\Debug\SolarSystem.Util.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Util\obj\Debug\SolarSystem.Util.pdb

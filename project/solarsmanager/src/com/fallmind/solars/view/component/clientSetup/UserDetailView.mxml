@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="600" height="400" layout="absolute"
+	showCloseButton="true" close="closeWindow()">
+<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			public static const ADD_COMMUNITY_OF_USER:String = "AddCommunityOfUser";
+			public static const DELETE_COMMUNITY_OF_USER:String = "DeleteCommunityOfUser";
+			public static const SAVE_USER_DETAIL:String = "SaveUserDetail";
+			public static const UPLOAD_USER_IMAGE:String = "UploadUserImage";
+			public static const BROW_USER_IMAGE:String = "BrowUserImage";
+			public static const CLOSE_USER_DETAIL_VIEW:String = "CloseUserDetailView";
+			
+			[Bindable]
+			public var selectedCommunity:Array = new Array;
+			[Bindable]
+			public var stateText:String;
+			
+			private function addCommunityOfUser():void {
+				this.dispatchEvent(new Event(ADD_COMMUNITY_OF_USER));
+			}
+			private function deleteCommunityOfUser():void {
+				if( this.selectedCommunityDataGrid.selectedItem == null) {
+					Alert.show("请选择一个小区");
+					return;
+				}
+				this.dispatchEvent(new Event(DELETE_COMMUNITY_OF_USER));
+			}
+			private function saveHandler():void {
+				if(userPasswordInput.text.length > 10) {
+					Alert.show("密码必须小于10位");
+					return;
+				}
+				if(userPasswordInput.text != confirmUserPasswordInput.text) {
+					Alert.show("密码与确认密码不一致");
+					return;
+				}
+				if( userNameInput.text == "" || userPasswordInput.text == "" || confirmUserPasswordInput.text == "" ) {
+					Alert.show("必须输入用户名和密码");
+					return;	
+				}
+				this.dispatchEvent(new Event(SAVE_USER_DETAIL));
+			}
+			private function brow():void {
+				this.dispatchEvent(new Event(BROW_USER_IMAGE));
+			}
+			private function upload():void {
+				this.dispatchEvent(new Event(UPLOAD_USER_IMAGE));
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_USER_DETAIL_VIEW));
+			}
+		]]>
+</mx:Script>
+<mx:VBox top="10" bottom="10" left="10" right="10">
+<mx:Canvas width="100%">
+	<mx:Form fontSize="12">
+		<mx:FormItem label="用户名">
+			<mx:TextInput id="userNameInput"/>
+		</mx:FormItem>
+		<mx:FormItem label="联系电话">
+			<mx:TextInput id="userPhoneInput"/>
+		</mx:FormItem>
+		<mx:FormItem label="密码">
+			<mx:TextInput id="userPasswordInput" restrict="0-9a-zA-Z" displayAsPassword="true"/>
+		</mx:FormItem>
+		<mx:FormItem label="确认密码">
+			<mx:TextInput id="confirmUserPasswordInput" restrict="0-9a-zA-Z" displayAsPassword="true"/>
+		</mx:FormItem>
+		<mx:FormItem label="用户类型">
+			<mx:ComboBox id="userTypeBox"/>
+		</mx:FormItem>
+	</mx:Form>	
+	<mx:VBox width="295" right="0">
+		<mx:Label text="照片"/>
+		<mx:HBox>
+			<mx:TextInput text="{stateText}" width="160" editable="false"/>
+			<mx:Button label="浏览" click="brow()"/>
+			<mx:Button label="上传" click="upload()"/>
+		</mx:HBox>
+		<mx:Image id="imageField" width="160" height="121"/>
+	</mx:VBox>
+	<mx:HBox horizontalAlign="right" bottom="0" right="0">
+		<mx:Button id="addCommunityBtn" label="添加" fontSize="12" click="addCommunityOfUser()" width="60"/>
+		<mx:Button id="deleteCommunityBtn" label="删除" click="deleteCommunityOfUser()" fontSize="12" width="60"/>
+	</mx:HBox>
+</mx:Canvas>
+	
+	<mx:DataGrid id="selectedCommunityDataGrid" width="100%" height="100%" fontSize="12" dataProvider="{selectedCommunity}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="国家" dataField="country"/>
+			<mx:DataGridColumn headerText="省" dataField="province"/>
+			<mx:DataGridColumn headerText="市" dataField="city"/>
+			<mx:DataGridColumn headerText="小区" dataField="community"/>
+			<mx:DataGridColumn headerText="权限" dataField="right"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:HBox fontSize="12">
+		<mx:Button id="saveInfoBtn" label="保存" click="saveHandler()" width="60"/>
+		<mx:Button label="取消" click="closeWindow()" width="60"/>
+	</mx:HBox>
+</mx:VBox>
+</mx:TitleWindow>

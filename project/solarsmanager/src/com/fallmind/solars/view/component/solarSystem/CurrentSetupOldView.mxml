@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			import mx.messaging.channels.StreamingAMFChannel;
+			import mx.events.CollectionEvent;
+			public static const CLOSE_CURRENT_SETUP_VIEW:String = "CloseCurrentSetupView";
+			public static const SAVE_CURRENT_SETUP:String = "SaveCurrentSetup";
+			public static const SET_OFFER_BOX_DEF_WL_L:String = "setOfferBox_Def_WL_L";
+			public static const SET_BOOST_PUMP_WORK:String = "setBoostPump_Work";
+			
+			[Bindable]
+			public var offerLevelArray:Array;
+			[Bindable]
+			public var pumpStartArray:Array;
+			
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_CURRENT_SETUP_VIEW));
+			}
+			private function saveHandler():void {
+				this.dispatchEvent(new Event(SAVE_CURRENT_SETUP));
+			}
+			
+			public function setState(state:int):void {
+				if( state == 0 ) {
+					isLatest.htmlText = "<font color='#000000'>当前设置</font><br>";
+					searchButton.enabled = true;
+				} else if(state == 1) {
+					isLatest.htmlText = "<font color='#FF0000'>正在发送指令，这个过程可能比较久，请耐心等待</font><br>";
+					searchButton.enabled = false;
+				} else if(state == 2) {
+					isLatest.htmlText = "<font color='#FF0000'>查询指令执行超时，以下为历史数据</font><br>";
+					searchButton.enabled = true;
+				} else if(state == 3) {
+					isLatest.htmlText = "<font color='#FF0000'>以下为历史数据，查看最新数据请点击查询按钮</font><br>";
+					searchButton.enabled = true;
+				}
+			}
+			
+			public function setData(data:XML):void {
+				Collector_T_H.text = data.SystemSetup.row.@Collector_T_H;
+				Collector_T_L.text = data.SystemSetup.row.@Collector_T_L;
+				ProductBox_T_L.text = data.SystemSetup.row.@ProductBox_T_L;
+				ProductBox_T_H.text = data.SystemSetup.row.@ProductBox_T_H;
+				OfferBox_T_L.text = data.SystemSetup.row.@OfferBox_T_L;
+				OfferBox_T_H.text = data.SystemSetup.row.@OfferBox_T_H;
+				Product_Offer_T.text = data.SystemSetup.row.@Product_Offer_T;
+				ReturnPipe_T_L.text = data.SystemSetup.row.@ReturnPipe_T_L;
+				ProductBox_WL_H.text = data.SystemSetup.row.@ProductBox_WL_H;
+				OfferBox_WL_H.text = data.SystemSetup.row.@OfferBox_WL_H;
+			
+				Collector_Box_T.text = data.SystemSetup.row.@Collector_Box_T;
+			
+				TwoBox_WL_Scale.text = Number(data.SystemSetup.row.@TwoBox_WL_Scale).toFixed(2);
+				OfferBox_Def_WL_L.text = data.SystemSetup.row.@OfferBox_Def_WL_L;
+				
+				setHoursOfferLevel(data.SystemSetup.row.@OfferBox_WL_L, data.SystemSetup.row.@OfferBox_Def_WL_L);
+				setBoostPump_Work(data.SystemSetup.row.@BoostPump_Work);
+			}
+			private function setBoostPump_Work(data:String):void {
+				var dataArray:Array = new Array;
+				var startTime:int = 0;
+				var endTime:int = 0;
+				var pumpDataArray:Array = new Array;
+				var pumpData:String = "";
+				var object:Object = new Object;
+				
+				for(var i:int = 0; i < data.length; i++) {
+					if(data.charAt(i) != ",") {
+						pumpData += data.charAt(i);
+					}
+					if(data.charAt(i) == "," || i == data.length - 1) {
+						dataArray.push(pumpData);
+						pumpData = "";
+					}
+				}
+				for(var j:int = 1; j < dataArray.length; j++) {
+					if(dataArray[j] == dataArray[j - 1]) {
+						endTime++;
+					} 
+					if( dataArray[j] != dataArray[j - 1] || j == dataArray.length - 1) {
+						object.startTime = startTime.toString();
+						object.endTime = endTime.toString();
+						object.isStart = dataArray[j - 1] == "1" ? true : false;
+						pumpDataArray.push(object);
+						object = new Object;
+						startTime = endTime + 1;
+						endTime = startTime;
+					}
+				}
+				
+				for(var i:int = 0; i < 24 - pumpDataArray.length; i++) {
+					var o:Object = new Object;
+					o.startTime = "";
+					o.endTime = "";
+					o.isStart = "";
+					pumpDataArray.push(o);
+				}
+				
+				pumpStartArray = pumpDataArray;
+				
+			}
+			private function setHoursOfferLevel(data:String, defaultData:String):void {
+				var dataArray:Array = new Array;
+				var startTime:int = 0;
+				var endTime:int = 0;
+				var levelDataArray:Array = new Array;
+				var levelData:String = "";
+				var object:Object = new Object;
+				
+				for(var i:int = 0; i < data.length; i++) {
+					if(data.charAt(i) != ",") {
+						levelData += data.charAt(i);
+					}
+					if(data.charAt(i) == "," || i == data.length - 1) {
+						dataArray.push(levelData);
+						levelData = "";
+					}
+				}
+				
+				for(var j:int = 1; j < dataArray.length; j++) {
+					if(dataArray[j] == dataArray[j - 1]) {
+						endTime++;
+					} 
+					if( dataArray[j] != dataArray[j - 1] || j == dataArray.length - 1) {
+						object.startTime = startTime.toString();
+						object.endTime = endTime.toString();
+						object.level = dataArray[j - 1];
+						levelDataArray.push(object);
+						object = new Object;
+						startTime = endTime + 1;
+						endTime = startTime;
+					}
+					if(dataArray[j] != dataArray[j - 1] && j == dataArray.length - 1) {
+						object.startTime = j;
+						object.endTime = j;
+						object.level = dataArray[j];
+						levelDataArray.push(object);
+					}
+				}
+				for(var i:int = 0; i < levelDataArray.length; i++) {
+					if(levelDataArray[i].level == defaultData) {
+						levelDataArray.splice(i, 1);
+					}
+				}
+				
+				for(var i:int = 0; i < 24 - levelDataArray.length; i++) {
+					var o:Object = new Object;
+					o.startTime = "";
+					o.endTime = "";
+					o.level = "";
+					levelDataArray.push(o);
+				}
+				
+				offerLevelArray = levelDataArray;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" left="10" right="10" bottom="10">
+		<mx:Text id="isLatest" text="  "/>
+		<mx:HBox>
+			<mx:Form fontSize="12" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+        	<mx:FormItem label="集热板定温出水水温（度）：">
+        		<mx:TextInput id="Collector_T_H" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="集热板最低水温（度）：">
+                <mx:TextInput id="Collector_T_L" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱最低水温（度）：">
+                <mx:TextInput id="ProductBox_T_L" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱最高水温（度）：">
+                <mx:TextInput id="ProductBox_T_H" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="供热水箱最低水温（度）：">
+                <mx:TextInput id="OfferBox_T_L" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="供热水箱最高水温（度）：" horizontalAlign="left">
+                <mx:TextInput id="OfferBox_T_H" width="40" editable="false"/>
+            </mx:FormItem>
+            <mx:FormItem label="集热器-水箱循环温差（度）：">
+                <mx:TextInput id="Collector_Box_T" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱-供热水箱循环温差（度）：">
+                <mx:TextInput id="Product_Offer_T" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="回水管最低水温（度）：">
+                <mx:TextInput id="ReturnPipe_T_L" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱满水水位（%）：">
+                <mx:TextInput id="ProductBox_WL_H" width="40" editable="false"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="供热水箱满水水位（%）：">
+                <mx:TextInput id="OfferBox_WL_H" width="40" editable="false"/>
+            </mx:FormItem>
+            <mx:FormItem label="产供最低水位配对比例：">
+				<mx:TextInput id="TwoBox_WL_Scale" width="40" editable="false"/>
+			</mx:FormItem>
+        </mx:Form>
+	        <mx:VBox>
+	        	<mx:HBox>
+	        		<mx:Label text="供热水箱单位时段默认最低水位："/>
+	        		<mx:TextInput width="40" id="OfferBox_Def_WL_L" editable="false"/>
+	        	</mx:HBox>
+	        	<mx:DataGrid id="offerLevelDataGrid" dataProvider="{offerLevelArray}" height="327">
+				<mx:columns>
+					<mx:DataGridColumn headerText="起始时间" dataField="startTime" width="80">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput id="offerStartTime" editable="false" width="70" text="{data.startTime}" change="data.startTime=offerStartTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="结束时间" dataField="endTime" width="80">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput id="offerEndTime" editable="false" width="70" text="{data.endTime}" change="data.endTime=offerEndTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="水位" dataField="isStart" width="80">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput id="offerLevel" editable="false" width="70" text="{data.level}" change="data.leval=offerLevel.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox>
+			<mx:HBox>
+				 <mx:Label text="各时段增压泵工作允许与否"/>
+				 <mx:TextInput width="40" visible="false"/>
+			</mx:HBox>
+			<mx:DataGrid id="pumpStateDataGrid" dataProvider="{pumpStartArray}" height="327" width="245">
+				<mx:columns>
+					<mx:DataGridColumn headerText="起始时间" dataField="startTime" width="60">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput id="pumpStartTime" editable="false" width="60" text="{data.startTime}" change="data.startTime=pumpStartTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="结束时间" dataField="endTime" width="60">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput id="pumpEndTime" editable="false" width="60" text="{data.endTime}" change="data.endTime=pumpEndTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="是否启用" dataField="isStart" paddingLeft="10" paddingRight="10">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox left="5" right="5">
+									<mx:RadioButton label="是" enabled="false" selected="{data.isStart}" fontSize="12" id="highRight" groupName="right" click="data.isStart=true"/>
+									<mx:RadioButton label="否" enabled="false" selected="{!data.isStart}" fontSize="12" id="mediumRight" groupName="right" click="data.isStart=false"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			</mx:VBox>
+			
+		</mx:HBox>
+		
+        <mx:HBox fontSize="12">
+        	<mx:Button label="查询" click="showCurrentSetup()" id="searchButton"/>
+        	<mx:Button label="返回" fontSize="12" click="closeWindow()" id="cancelButton"/>
+        </mx:HBox>
+		</mx:VBox>
+		<mx:Script>
+			<![CDATA[
+				import mx.managers.PopUpManager;
+				public static const SHOW_CURRENT_SETUP:String = "ShowCurrentSetup";
+				private function showCurrentSetup():void {
+					this.dispatchEvent(new Event(SHOW_CURRENT_SETUP));
+				}
+			]]>
+		</mx:Script>
+</mx:TitleWindow>

@@ -1,0 +1,18 @@
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\bin\Debug\SolarSystem.DAL.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\bin\Debug\SolarSystem.DAL.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\obj\Debug\SolarSystem.DAL.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\obj\Debug\SolarSystem.DAL.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\bin\Debug\SolarSystem.Util.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\bin\Debug\SolarSystem.Util.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\bin\Debug\SolarSystem.Model.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem.DAL\bin\Debug\SolarSystem.Model.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\bin\Debug\SolarSystem.DAL.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\bin\Debug\SolarSystem.DAL.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\bin\Debug\SolarSystem.Model.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\bin\Debug\SolarSystem.Util.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\bin\Debug\SolarSystem.Model.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\bin\Debug\SolarSystem.Util.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\obj\Debug\ResolveAssemblyReference.cache
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\obj\Debug\SolarSystem.DAL.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.DAL\obj\Debug\SolarSystem.DAL.pdb

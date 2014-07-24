@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="300" xmlns:solarSystem="com.fallmind.solars.view.component.solarSystem.*">
+	<mx:VBox>
+		<mx:ToggleButtonBar fontSize="14" itemClick="changeMode(event)">
+			<mx:dataProvider>
+				<mx:Array>
+					<mx:String>数据模式</mx:String>
+					<mx:String>图标模式</mx:String>
+				</mx:Array>
+			</mx:dataProvider>
+		</mx:ToggleButtonBar>
+		<mx:ViewStack id="viewstack">
+			<solarSystem:HistoryDataDisplayView id="dataView"/>
+			<solarSystem:HistoryChartView id="chatView"/>
+		</mx:ViewStack>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			private function changeMode(e:ItemClickEvent):void {
+				if(e.label == "数据模式") {
+					viewstack.selectedIndex = 0;
+				} else {
+					viewstack.selectedIndex = 1;
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

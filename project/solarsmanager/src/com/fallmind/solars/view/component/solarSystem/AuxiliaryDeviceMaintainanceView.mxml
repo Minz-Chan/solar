@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.model.bussiness.ConfigManager;
+			import mx.events.ItemClickEvent;
+
+			public static const SAVE_CONFIG:String = "SaveConfig";
+			public static const CLOSE_ADM_VIEW:String = "CloseAuxiliaryDeviceMaintainanceView";
+			
+			private var AirHeat_Fix:String = "";
+			
+			private function saveConfig():void {
+				this.dispatchEvent(new Event(SAVE_CONFIG));
+			}
+			
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_ADM_VIEW));
+			}
+			
+			public function getNewAirHeatFix():String {
+				var tmp:String = auxiliaryDeviceWorkStatus.selectedValue.toString();
+				var new_airheatfix:String = AirHeat_Fix.substr(0, 2) + tmp + AirHeat_Fix.substr(3);
+				return new_airheatfix;
+			}
+			
+			public function setData(airheat_fix:String):void {
+				AirHeat_Fix = airheat_fix;
+				
+				var workStatus:String = airheat_fix.charAt(2);
+				auxiliaryDeviceWorkStatus.selectedValue = workStatus;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox fontSize="12" top="10" bottom="10" left="10" right="10" id="vbox1">
+		<mx:Text id="stateText" text="辅助加热设备工作状态"/>
+		<mx:HBox>
+        	<mx:RadioButtonGroup id="auxiliaryDeviceWorkStatus"/>
+			<mx:RadioButton label="正常工作" value="1" groupName="auxiliaryDeviceWorkStatus" width="115" />
+			<mx:RadioButton label="停止工作" value="0" groupName="auxiliaryDeviceWorkStatus" width="115" />
+        </mx:HBox>
+        <mx:HBox horizontalAlign="right" width="100%">
+        	<mx:Button label="确定" click="saveConfig()"/>
+        	<mx:Button label="返回" click="closeWindow()"/>
+        </mx:HBox>
+		
+	</mx:VBox>
+
+</mx:TitleWindow>

@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			// 把所有警告数据项变成黑色
+			private var totalScene:TotalScene = null;
+			private var weather_control:int = 0;
+			private var displayMode:String;
+			private var userType:String;
+			private var systemData:XML;
+			public function setDisplayMode(s:String):void {
+				displayMode = s;
+			}
+			public function setUserType(s:String):void {
+				userType = s;
+				trace(userType);
+			}
+			public function warningClear():void {
+				OfferBox_T.setStyle("color", "0x000000");				
+				OfferBox_WL.setStyle("color", "0x000000");	
+				ProductBox_T.setStyle("color", "0x000000");
+				ProductBox_WL.setStyle("color", "0x000000");		
+			}
+			public function clear():void {
+				Environment_T.text = "";
+				Collector1_In_T.text = "";
+				Collector2_In_T.text = "";
+				Collector3_In_T.text = "";
+				OfferBox_T.text = "";
+				ProductBox_T.text = "";
+				//ProductBox_WT.text = data.SystemData.row.@ProductBox_WT;
+				SunLightIntension.text = "";
+				Collector1_Out_flow.text = "";
+				Collector2_Out_flow.text = "";
+				Collector3_Out_flow.text = "";
+				User_Flow.text = "";
+				AirHeat_Elec.text = "";
+				ElecHeat_Elec.text = "";
+				Total_Elec.text = "";
+				solar_energy.text = "";
+				Collector1_Out_T.text = "";
+				Collector2_Out_T.text = "";
+				Collector3_Out_T.text = "";
+				ProductBox_T.text = "";
+				ReturnPipe_T.text = "";
+				//OfferBox_WT.text = data.SystemData.row.@OfferBox_WT;
+				
+				
+				OfferBox_WL.text = "";
+				ProductBox_WL.text = "";
+				
+				
+				currentDataTime.text = "";
+			
+				Collector1_In_Open.text =  "关闭";
+				Collector2_In_Open.text = "关闭";
+				Collector3_In_Open.text = "关闭";
+				Collector1_Loop_Open.text = "关闭";
+				Collector2_Loop_Open.text = "关闭";
+				Collector3_Loop_Open.text = "关闭";
+				Product_Box_Open.text = "关闭";
+				Offer_Product_Box_Open.text = "关闭";
+				AirHeat_Open.text = "关闭";
+				ElecHeat_Open.text = "关闭";
+				Pressure_Box_Open.text = "关闭";
+				ReturnPipe_Open.text = "关闭";
+				Cold_Box_Open.text = "关闭";
+				
+				ARM_Version.text = "";
+			}
+			private function setGraphicsData(data:XML):void {
+				if(totalScene == null) {
+					totalScene = new TotalScene();
+				}
+				systemData = data;
+				totalScene.weather_control = weather_control;// 控制天气
+				totalScene.Nowdata = castTime(data.SystemData.row.@ReDataTime);
+				
+				var openDevice:String = data.SystemData.row.@PumpState;
+				
+				totalScene.Collector1_Fix = int(data.SystemData.row.@Collector1_Fix);
+				totalScene.Collector2_Fix = int(data.SystemData.row.@Collector2_Fix);
+				totalScene.Collector3_Fix = int(data.SystemData.row.@Collector3_Fix);
+				
+				totalScene.Collector1_in_line_Fix = int(data.SystemData.row.@Collector_in_line_Fix);
+				totalScene.Collector2_in_line_Fix = int(data.SystemData.row.@Collector_in_line_Fix);
+				totalScene.Collector3_in_line_Fix = int(data.SystemData.row.@Collector_in_line_Fix);
+				// 集热板出水管接法
+				totalScene.OutHose_ConnectObj = int(data.SystemData.row.@OutHose_ConnectObj);
+				totalScene.CycleHose_ConnectObj = int(data.SystemData.row.@CycleHose_ConnectObj);
+				// 空气源热泵
+				totalScene.AirHeat_Fix = int(String(data.SystemData.row.@AirHeat_Fix).charAt(0));
+				totalScene.AirHeat_Open = int(openDevice.charAt(16));
+				totalScene.AirHeat_ConnectObj = int(String(data.SystemData.row.@AirHeat_Fix).charAt(4));
+				
+				
+				
+				
+				// 电加热
+				totalScene.ElecHeat_Fix = int(String(data.SystemData.row.@ElecHeat_Fix).charAt(0));
+				totalScene.ElecHeat_Open = int(openDevice.charAt(18));
+				
+				totalScene.ElecHeat_ConnectObj = int(String(data.SystemData.row.@ElecHeat_Fix).charAt(4));
+				totalScene.ColdHose_Fix = int(String(data.SystemData.row.@ColdHose_Fix).charAt(0));
+				totalScene.ColdHose_ConnectObj = int(String(data.SystemData.row.@ColdHose_Fix).charAt(2));
+				
+				totalScene.Collector_T_In_1 = int(data.SystemData.row.@Collector1_In_T);
+				totalScene.Collector_T_In_2 = int(data.SystemData.row.@Collector2_In_T);
+				totalScene.Collector_T_In_3 = int(data.SystemData.row.@Collector3_In_T);
+				if(data.SystemData.row.@Collector1_Out_T == undefined) {// 如果数据库中该字段为NULL，那么水温显示“无数据”
+					totalScene.Collector_T_Out_1 = 999;
+				} else {
+					totalScene.Collector_T_Out_1 = int(data.SystemData.row.@Collector1_Out_T);
+				}
+				if(data.SystemData.row.@Collector2_Out_T == undefined) {
+					totalScene.Collector_T_Out_2 = 999;
+				} else {
+					totalScene.Collector_T_Out_2 = int(data.SystemData.row.@Collector2_Out_T);
+				}
+				if(data.SystemData.row.@Collector3_Out_T == undefined) {
+					totalScene.Collector_T_Out_3 = 999;
+				} else {
+					totalScene.Collector_T_Out_3 = int(data.SystemData.row.@Collector3_Out_T);
+				}
+				totalScene.ProductBox_T = int(data.SystemData.row.@ProductBox_T);
+				totalScene.OfferBox_T = int(data.SystemData.row.@OfferBox_T);
+				// 回水管温度
+				totalScene.add_water_T = int(data.SystemData.row.@ReturnPipe_T);
+				
+				// 水位范围是0到100,对数据 进行过滤
+				var pwl:int = int(data.SystemData.row.@ProductBox_WL);
+				if(pwl > 100) {
+					pwl = 100;
+				} else if(pwl < 0) {
+					pwl = 0;
+				}
+				totalScene.ProductBox_WL = pwl;
+				var owl:int = int(data.SystemData.row.@OfferBox_WL);
+				if(owl > 100) {
+					owl = 100;
+				} else if(owl < 0) {
+					owl = 0;
+				}
+				totalScene.OfferBox_WL = owl;
+				
+				
+				
+				// 集热板进水泵
+				totalScene.cold_pump_In_1_On = int(openDevice.charAt(0));
+				totalScene.cold_pump_In_2_On = int(openDevice.charAt(2));
+				totalScene.cold_pump_In_3_On = int(openDevice.charAt(4));
+				
+				// 循环泵
+				totalScene.circulation_pump_1_On = int(openDevice.charAt(6));
+				totalScene.circulation_pump_2_On = int(openDevice.charAt(8));
+				totalScene.circulation_pump_3_On = int(openDevice.charAt(10));
+				
+				// 供热补水泵
+				totalScene.offer_pump_On = int(openDevice.charAt(12));
+				// 产供循环泵
+				totalScene.offer_product_pump_On = int(openDevice.charAt(14));
+				// 用户用水增压泵
+				totalScene.pressure_pump_On = int(openDevice.charAt(20));
+				// 回水泵
+				totalScene.add_water_pump_On = int(openDevice.charAt(22));
+				//定时进冷水泵
+				totalScene.cold_pump_circulation_On = int(openDevice.charAt(24));
+				
+				totalScene.Environment_T = data.SystemData.row.@Environment_T;
+				
+				// 设置花洒的开关
+				var pumpWork:String = data.SystemData.row.@BoostPump_Work;
+				var nowdate:Date = new Date;
+				if(pumpWork.charAt(nowdate.hours * 2) == '0') {
+					totalScene.client_use = 0;
+				} else {
+					totalScene.client_use = 1;
+				}
+				
+				totalScene.width = 690;
+				totalScene.height = 360;
+				totalScene.x = 70;
+				totalScene.y = 20;
+				addChild(totalScene);
+			}
+			// 设置天气，0表示获取不到，1表示晴，2表示多云，3表示雨
+			public function setWeather(weatherData:int):void {
+				//totalScene.weather_control = weatherData;
+				weather_control = weatherData;
+			}
+			public function setData(data:XML):void {
+				systemData = data;
+				if(data.SystemData.row.@Collector1_Fix == undefined &&
+				data.SystemData.row.@Collector2_Fix == undefined &&
+				data.SystemData.row.@Collector3_Fix == undefined) {
+					this.removeAllChildren();
+					return;
+				}
+				setGraphicsData(data);
+				
+				if(userType == "政府用户") {
+					switch2Gov();
+				}
+				if(displayMode == "Heat") {
+					switch2Heat();
+				}
+				if(data.SystemData.row.@AuxiliaryEleFactor == undefined) {
+					//airHeat.label = "辅助加热得热量（焦）：";
+					AirHeat_Elec.text = (Number(data.SystemData.row.@AirHeat_Elec) / 100.0).toFixed(2);
+				} else {
+					//airHeat.label = "辅助加热得热量x" + Number(data.SystemData.row.@ElecFactor).toFixed(1) + "（焦）：";
+					var factor:Number = Number(data.SystemData.row.@AuxiliaryEleFactor);
+					AirHeat_Elec.text = (Number(data.SystemData.row.@AirHeat_Elec) * factor / 100.0).toFixed(2);
+				}
+				if(data.SystemData.row.@TotalEleFactor == undefined) {
+					//airHeat.label = "辅助加热得热量（焦）：";
+					Total_Elec.text = (Number(data.SystemData.row.@Total_Elec) / 100.0).toFixed(2);
+				} else {
+					//airHeat.label = "辅助加热得热量x" + Number(data.SystemData.row.@ElecFactor).toFixed(1) + "（焦）：";
+					var factor:Number = Number(data.SystemData.row.@TotalEleFactor);
+					Total_Elec.text = (Number(data.SystemData.row.@Total_Elec) * factor / 100.0).toFixed(2);
+				}
+				Environment_T.text = data.SystemData.row.@Environment_T;
+				Collector1_In_T.text = data.SystemData.row.@Collector1_In_T;
+				Collector2_In_T.text = data.SystemData.row.@Collector2_In_T;
+				Collector3_In_T.text = data.SystemData.row.@Collector3_In_T;
+				OfferBox_T.text = data.SystemData.row.@OfferBox_T;
+				ProductBox_T.text = data.SystemData.row.@ProductBox_T;
+				//ProductBox_WT.text = data.SystemData.row.@ProductBox_WT;
+				SunLightIntension.text = data.SystemData.row.@SunlightIntension;
+				Collector1_Out_flow.text = data.SystemData.row.@Collector1_Out_flow;
+				Collector2_Out_flow.text = data.SystemData.row.@Collector2_Out_flow;
+				Collector3_Out_flow.text = data.SystemData.row.@Collector3_Out_flow;
+				//User_Flow.text = data.SystemData.row.@Use_flow;
+				User_Flow.text = data.SystemData.row.@solar_energy;
+				ElecHeat_Elec.text = (Number(data.SystemData.row.@ElecHeat_Elec) / 100.0).toFixed(2);
+				Total_Elec.text = (Number(data.SystemData.row.@Total_Elec) / 100.0).toFixed(2);
+				//solar_energy.text = data.SystemData.row.@solar_energy;
+				solar_energy.text = data.SystemData.row.@Use_flow;
+				Collector1_Out_T.text = data.SystemData.row.@Collector1_Out_T;
+				Collector2_Out_T.text = data.SystemData.row.@Collector2_Out_T;
+				Collector3_Out_T.text = data.SystemData.row.@Collector3_Out_T;
+				ProductBox_T.text = data.SystemData.row.@ProductBox_T;
+				ReturnPipe_T.text = data.SystemData.row.@ReturnPipe_T;
+				//OfferBox_WT.text = data.SystemData.row.@OfferBox_WT;
+				
+				OfferBox_WL.text = data.SystemData.row.@OfferBox_WL;
+				ProductBox_WL.text = data.SystemData.row.@ProductBox_WL;
+				
+				
+				currentDataTime.text = castTime(data.SystemData.row.@ReDataTime);
+				
+				
+				var openDevice:String = data.SystemData.row.@PumpState;
+				Collector1_In_Open.htmlText = openDevice.charAt(0) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Collector2_In_Open.htmlText = openDevice.charAt(2) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Collector3_In_Open.htmlText = openDevice.charAt(4) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Collector1_Loop_Open.htmlText = openDevice.charAt(6) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Collector2_Loop_Open.htmlText = openDevice.charAt(8) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Collector3_Loop_Open.htmlText = openDevice.charAt(10) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Product_Box_Open.htmlText = openDevice.charAt(12) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Offer_Product_Box_Open.htmlText = openDevice.charAt(14) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				AirHeat_Open.htmlText = openDevice.charAt(16) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				ElecHeat_Open.htmlText = openDevice.charAt(18) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Pressure_Box_Open.htmlText = openDevice.charAt(20) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				ReturnPipe_Open.htmlText = openDevice.charAt(22) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				Cold_Box_Open.htmlText = openDevice.charAt(24) == '0' ? "<font color='#000000'>关闭</font>" : "<font color='#008fff'>开启</font><br>";
+				
+				
+				ARM_Version.text = data.SystemData.row.@ARM_Version;
+			}
+			private function castTime(time:String):String {
+				var result:String = time;
+				if(result.length > 19) {
+					result = time.substr(0, 19);
+				}
+				var myPattern:RegExp = /T/;
+				result = result.replace(myPattern, " ");
+				return result;
+			}
+		]]>
+	</mx:Script>
+	<mx:Script>
+        <![CDATA[
+        	import mx.events.ItemClickEvent;
+            import mx.events.ListEvent;
+
+            private function comboBox_change(evt:ListEvent):void {
+                var cssObj:CSSStyleDeclaration = StyleManager.getStyleDeclaration(".customTextAlignLabel");
+                cssObj.setStyle("textAlign", evt.currentTarget.selectedItem);
+            }
+            // 改变显示模式
+            public function switch2DataMode():void {
+            	if(totalScene != null) {
+            		totalScene.visible = false;
+            		topHBox.visible = true;
+            		dataHBox.visible = true;
+            	} 
+            }
+            public function switch2GraphicsMode():void {
+            	if(totalScene != null) {
+            		totalScene.visible = true;
+            		topHBox.visible = false;
+            		dataHBox.visible = false;
+            	}
+            }
+     		public function switch2Heat():void {
+     			outFlow1.label = "集热板1得热量（千瓦时）:";
+     			outFlow2.label = "集热板2得热量（千瓦时）:";
+     			outFlow3.label = "集热板3得热量（千瓦时）:";
+     			userFlow.label = "供热供热量（千瓦时）："
+     			sunshine.label = "太阳辐射强度（瓦每平方米）：";
+     			elecHeatLabel.label = "供热回热量（千瓦时）：";
+     			totalElec.label = "消耗的总用电量（千瓦时）：";
+     			airHeat.label = "辅助加热耗电量（千瓦时）：";
+     		}
+     		private function switch2Gov():void {
+     			pumpForm.visible = false;
+     			notGovItem1.visible = false;
+     			notGovItem2.visible = false;
+     			notGovItem3.visible = false;
+     			notGovItem4.visible = false;
+     			notGovItem5.visible = false;
+     			sunshine.visible = false;
+     			notGovItem7.visible = false;
+     			notGovItem8.visible = false;
+     			userFlow.visible = false;
+				elecHeatLabel.visible = false;
+				totalElec.visible = false;
+     		}
+        ]]>
+    </mx:Script>
+   
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox id="topHBox" visible="false">
+			<mx:Label text="主控器版本："/>
+			<mx:Text id="ARM_Version"/>
+				
+			<mx:Label text="当前数据时间："/>
+			<mx:Text id="currentDataTime"/>
+		</mx:HBox>
+		
+		<mx:HBox id="dataHBox" visible="false">
+		
+		<mx:Form>
+		<mx:FormItem label="环境温度（度）：">
+			<mx:Text id="Environment_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="集热板1入口水温（度）：">
+			<mx:Text id="Collector1_In_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="集热板2入口水温（度）：">
+			<mx:Text id="Collector2_In_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="集热板3入口水温（度）：">
+			<mx:Text id="Collector3_In_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="集热板1出口水温（度）：">
+			<mx:Text id="Collector1_Out_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="集热板2出口水温（度）：">
+			<mx:Text id="Collector2_Out_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="集热板3出口水温（度）：">
+			<mx:Text id="Collector3_Out_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="供热水箱水温（度）：" id="notGovItem1">
+			<mx:Text id="OfferBox_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="产热水箱水温（度）：" id="notGovItem2">
+			<mx:Text id="ProductBox_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="回水管水温（度）：" id="notGovItem3">
+			<mx:Text id="ReturnPipe_T" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="供热水箱水位（%） ：" id="notGovItem4">
+			<mx:Text id="OfferBox_WL" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="产热水箱水位（%）：" id="notGovItem5">
+			<mx:Text id="ProductBox_WL" textAlign="right"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:Form>
+		<mx:FormItem id="outFlow1" label="集热板1出水流量（升）：">
+			<mx:Text id="Collector1_Out_flow" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem id="outFlow2" label="集热板2出水流量（升）：">
+			<mx:Text id="Collector2_Out_flow" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem id="outFlow3" label="集热板3出水流量（升）：">
+			<mx:Text id="Collector3_Out_flow" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="辅助加热耗电量（千瓦时）：" id="airHeat">
+			<mx:Text id="AirHeat_Elec" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="消耗总电量（千瓦时）：" id="totalElec">
+			<mx:Text id="Total_Elec" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem id="sunshine" label="日照强度（瓦每平方米）：">
+			<mx:Text id="SunLightIntension" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="总进水量（吨）：" id="notGovItem7">
+			<mx:Text id="solar_energy" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="供热出水量（吨）：" id="userFlow">
+			<mx:Text id="User_Flow" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="供热回水量（吨）：" id="elecHeatLabel">
+			<mx:Text id="ElecHeat_Elec" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="定时进冷水泵：" id="notGovItem8">
+			<mx:Text text="开启" id="Cold_Box_Open" textAlign="right"/>
+		</mx:FormItem>
+		</mx:Form>
+		<mx:Form id="pumpForm">
+			<mx:FormItem label="回水泵：">
+				<mx:Text text="开启" id="ReturnPipe_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="集热管1进水泵：">
+				<mx:Text text="开启" id="Collector1_In_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="集热管2进水泵：">
+				<mx:Text text="开启" id="Collector2_In_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="集热管3进水泵：">
+				<mx:Text text="开启" id="Collector3_In_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="集1-水箱循环泵：">
+				<mx:Text text="开启" id="Collector1_Loop_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="集2-水箱循环泵：">
+				<mx:Text text="开启" id="Collector2_Loop_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="集3-水箱循环泵：">
+				<mx:Text text="开启" id="Collector3_Loop_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="供热补水泵：">
+				<mx:Text text="开启" id="Product_Box_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="产供循环泵：">
+				<mx:Text text="开启" id="Offer_Product_Box_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="空气源热泵：">
+				<mx:Text text="开启" id="AirHeat_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="电加热：">
+				<mx:Text text="开启" id="ElecHeat_Open" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="用户用水增压泵：">
+				<mx:Text text="开启" id="Pressure_Box_Open" textAlign="right"/>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,118 @@
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" label="用户信息管理" width="100%" height="100%" fontSize="12">
+<mx:Script>
+		<![CDATA[
+			import mx.containers.TitleWindow;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			
+			public static const COUNTRY_TYPE:String = "1";
+			public static const PROVINCE_TYPE:String = "2";
+			public static const CITY_TYPE:String = "3";
+			public static const DIRECT_CITY_TYPE:String = "4";
+			public static const SHOW_USER_DETAIL:String = "ShowUserDetail";
+			public static const ADD_USER:String = "AddUser";
+			public static const SHOW_ALL_USERS:String = "ShowAllUsers";
+			public static const DELETE_USER:String = "DeleteUser";
+			
+			[Bindable]
+			public var countryButtonData:XMLList;
+			[Bindable]
+			public var provinceButtonData:XMLList;
+			[Bindable]
+			public var cityButtonData:XMLList;
+			[Bindable]
+			public var allUserInfoData:XMLList;
+			[Bindable]
+			public var communityButtonData:XMLList;
+			
+			public var totalUserInfo:XMLList;
+			
+			public function closeHandler(e:Event):void {
+				if( ComboBox(e.target).selectedItem == null) {
+					return;
+				}
+				if( ComboBox(e.target).dataProvider == null) {
+					return;
+				}
+				if( ComboBox(e.target).selectedItem.@typeID == COUNTRY_TYPE) {
+					provinceButtonData = countryButtonData.(@name==ComboBox(e.target).selectedItem.@name).Area;
+					cityButtonData = provinceButtonData.(@name==provinceBox.selectedItem.@name).Area;
+					communityButtonData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+					allUserInfoData = totalUserInfo.(@CommunityID==communityBox.selectedItem.@id);
+				} else if( ComboBox(e.target).selectedItem.@typeID == PROVINCE_TYPE ) {
+					cityButtonData = provinceButtonData.(@name==ComboBox(e.target).selectedItem.@name).Area;
+					communityButtonData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+					allUserInfoData = totalUserInfo.(@CommunityID==communityBox.selectedItem.@id);
+				} else if( ComboBox(e.target).selectedItem.@typeID == CITY_TYPE) {
+					if( cityButtonData != null) {
+						communityButtonData = cityButtonData.(@name==cityBox.selectedItem.@name).CommunityInfo;
+						allUserInfoData = totalUserInfo.(@CommunityID==communityBox.selectedItem.@id);
+					}
+				} else if( ComboBox(e.target).selectedItem.@typeID == DIRECT_CITY_TYPE) {
+					cityButtonData = null;
+					communityButtonData = provinceButtonData.(@name==provinceBox.selectedItem.@name).CommunityInfo;
+					allUserInfoData = totalUserInfo.(@CommunityID==communityBox.selectedItem.@id);
+				} else if( ComboBox(e.target) == communityBox ) {
+					allUserInfoData = totalUserInfo.(@CommunityID==communityBox.selectedItem.@id);
+				}
+			}
+			
+			private function showUserDetail():void {
+				if(this.userInfoDataGrid.selectedItem == null ) {
+					Alert.show("请选择一个用户");
+					return;
+				}
+				this.dispatchEvent(new Event(SHOW_USER_DETAIL));
+			}
+			private function addUserInfo():void {
+				this.dispatchEvent(new Event(ADD_USER));
+			}
+			private function deleteUser():void {
+				if(this.userInfoDataGrid.selectedItem == null ) {
+					Alert.show("请选择一个用户");
+					return;
+				}
+				var alert:Alert = Alert.show("确认删除用户？", "确认删除", Alert.YES | Alert.NO);
+				alert.addEventListener(CloseEvent.CLOSE, makeSureDeleteHandler);
+			}
+			private function makeSureDeleteHandler(e:CloseEvent):void {
+				switch(e.detail) {
+					case Alert.YES:
+						this.dispatchEvent(new Event(DELETE_USER));
+						break;
+					case Alert.NO:
+						break;
+				}
+			}
+			private function showAllUser():void {
+				this.dispatchEvent(new Event(SHOW_ALL_USERS));
+			}
+		]]>
+	</mx:Script>
+	<mx:Label x="0" y="0" text="用户信息管理" fontSize="16"/>
+	<mx:Canvas left="10" right="10" bottom="10" top="30">
+		<mx:Canvas width="100%">
+			<mx:HBox>
+				<mx:ComboBox id="countryBox" labelField="@name" text="国家" fontSize="12" width="80" close="closeHandler(event)" dataProvider="{countryButtonData}"></mx:ComboBox>
+				<mx:ComboBox id="provinceBox" labelField="@name" text="省份" fontSize="12" width="80" close="closeHandler(event)" dataProvider="{provinceButtonData}"></mx:ComboBox>
+				<mx:ComboBox id="cityBox" labelField="@name" text="市" fontSize="12" width="80" close="closeHandler(event)" dataProvider="{cityButtonData}"></mx:ComboBox>
+				<mx:ComboBox id="communityBox" labelField="@name" text="小区" fontSize="12" width="130" close="closeHandler(event)" dataProvider="{communityButtonData}"></mx:ComboBox>
+			</mx:HBox>
+			<mx:HBox right="0" top="0">
+				<mx:Button label="所有用户" fontSize="12" click="showAllUser()" width="90"/>
+				<mx:Button label="详细信息" fontSize="12" click="showUserDetail()" width="90"/>
+				<mx:Button label="添加" fontSize="12" click="addUserInfo()" width="60"/>
+				<mx:Button label="删除" fontSize="12" click="deleteUser()" width="60"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:DataGrid width="100%" id="userInfoDataGrid" height="88%" bottom="0" dataProvider="{allUserInfoData}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="用户名" dataField="@UserName"/>
+				<mx:DataGridColumn headerText="联系电话" dataField="@UserPhone"/>
+				<mx:DataGridColumn headerText="用户类型" dataField="@UserType"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:Canvas>
+	
+</mx:Canvas>

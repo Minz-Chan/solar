@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.model.CheckProxy.SetupData;
+			import mx.utils.ObjectProxy;
+			import mx.messaging.channels.StreamingAMFChannel;
+			import mx.events.CollectionEvent;
+			import mx.controls.Alert;
+			import com.fallmind.solars.model.bussiness.ConfigManager;
+			
+			public static const CLOSE_CURRENT_SETUP_VIEW:String = "CloseCurrentSetupView";
+			public static const SAVE_CURRENT_SETUP:String = "SaveCurrentSetup";
+			public static const SET_OFFER_BOX_DEF_WL_L:String = "setOfferBox_Def_WL_L";
+			public static const SET_BOOST_PUMP_WORK:String = "setBoostPump_Work";
+			
+			[Bindable]
+			public var offerLevelArray:Array = new Array;
+			[Bindable]
+			public var pumpStartArray:Array = new Array;
+			
+			private var config:ConfigManager = ConfigManager.getManageManager();
+			private var lowestTemp:int = config.lowestTemp;
+			private var lowestLevel:int = config.lowestLevel;
+			private var highestTemp:int = config.highestTemp;
+			private var highestLevel:int = config.highestLevel;
+			
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_CURRENT_SETUP_VIEW));
+			}
+			public function colorBack():void {
+				Collector_T_H.setStyle("color", "0x000000");
+            	Collector_T_L.setStyle("color", "0x000000");
+           		ProductBox_T_L.setStyle("color", "0x000000");
+           		ProductBox_T_H.setStyle("color", "0x000000");
+           		OfferBox_T_L.setStyle("color", "0x000000");
+          		OfferBox_T_H.setStyle("color", "0x000000");
+           		Collector_Box_T.setStyle("color", "0x000000");
+           		Product_Offer_T.setStyle("color", "0x000000");
+           		ReturnPipe_T_L.setStyle("color", "0x000000");
+           		ProductBox_WL_H.setStyle("color", "0x000000");
+           		OfferBox_WL_H.setStyle("color", "0x000000");
+           		TwoBox_WL_Scale.setStyle("color", "0x000000");
+           		OfferBox_Def_WL_L.setStyle("color", "0x000000");
+           		dataGrid1.setStyle("color", "0x000000");
+           		dataGrid2.setStyle("color", "0x000000");
+			}
+			private function saveHandler():void {
+				if(OfferBox_Def_WL_L.text == "" || 
+				Collector_T_H.text == "" ||
+            	Collector_T_L.text == "" ||
+           		ProductBox_T_L.text == "" ||
+           		ProductBox_T_H.text == "" ||
+           		OfferBox_T_L.text == "" ||
+          		OfferBox_T_H.text == "" ||
+           		Collector_Box_T.text == "" ||
+           		Product_Offer_T.text == "" ||
+           		ReturnPipe_T_L.text == "" ||
+           		ProductBox_WL_H.text == "" ||
+           		OfferBox_WL_H.text == "" ||
+           		TwoBox_WL_Scale.text == "") {
+					Alert.show("设置数据不能为空");
+					return;
+				}
+				
+				if( int(OfferBox_Def_WL_L.text) < lowestLevel || int(OfferBox_Def_WL_L.text) > highestLevel) {
+					alertShow("供热水箱单位时段默认最低水位", lowestLevel, highestLevel);
+					return;
+				} 
+				if( int(Collector_T_H.text) < lowestTemp || int(Collector_T_H.text) > highestTemp) {
+					alertShow("集热板最高水温", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(Collector_T_L.text) < lowestTemp || int(Collector_T_L.text) > highestTemp) {
+					alertShow("集热板最低水温", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(ProductBox_T_L.text) < lowestTemp || int(ProductBox_T_L.text) > highestTemp) {
+					alertShow("产热水箱最低水温", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(ProductBox_T_H.text) < lowestTemp || int(ProductBox_T_H.text) > highestTemp) {
+					alertShow("产热水箱最高水温", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(OfferBox_T_L.text) < lowestTemp || int(OfferBox_T_L.text) > highestTemp) {
+					alertShow("供热水箱最低水温", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(OfferBox_T_H.text) < lowestTemp || int(OfferBox_T_H.text) > highestTemp) {
+					alertShow("供热水箱最高水温", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(Collector_Box_T.text) < lowestTemp || int(Collector_Box_T.text) > highestTemp) {
+					alertShow("集热器-水箱循环温差", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(Product_Offer_T.text) < lowestTemp || int(Product_Offer_T.text) > highestTemp) {
+					alertShow("产热水箱-供热水箱循环温差", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(ReturnPipe_T_L.text) < lowestTemp || int(ReturnPipe_T_L.text) > highestTemp) {
+					alertShow("回水管最低水温", lowestTemp, highestTemp);
+					return;
+				} 
+				if( int(ProductBox_WL_H.text) < lowestLevel || int(ProductBox_WL_H.text) > highestLevel) {
+					alertShow("产热水箱满水水位", lowestLevel, highestLevel);
+					return;
+				} 
+				if( int(OfferBox_WL_H.text) < lowestLevel || int(OfferBox_WL_H.text) > highestLevel) {
+					alertShow("供热水箱满水水位", lowestLevel, highestLevel);
+					return;
+				} 
+				
+				for(var i:int = 0; i < offerLevelArray.length; i++) {
+					if((int(offerLevelArray[i].level) < lowestLevel || int(offerLevelArray[i].level) > highestLevel) && offerLevelArray[i].level != "") {
+						alertShow("供热水箱最低水位", lowestLevel, highestLevel);
+						return;
+					}
+					
+				}
+				this.dispatchEvent(new Event(SAVE_CURRENT_SETUP));
+			}
+			
+			private function alertShow(content:String, low:int, high:int):void {
+				Alert.show( content + "的值必须介于" + low + "和" + high + "之间!"); 
+			}
+			
+			public function setState(state:int):void {
+				switch(state) {
+					case 0:
+						isLatest.htmlText = "<font color='#000000'>设置系统参数</font><br>";
+						textInputEnable(true);
+						break;
+					case 1: 
+						isLatest.htmlText = "<font color='#FF0000'>正在设置，请耐心等待</font><br>";
+						textInputEnable(false);
+						break;
+					case 2:
+						isLatest.htmlText = "<font color='#FF0000'>设置超时，以下为上一次操作数据</font><br>";
+						textInputEnable(true);
+						break;
+				}
+			}
+			
+			private function textInputEnable(b:Boolean):void {
+        		Collector_T_H.enabled = b;
+            	Collector_T_L.enabled = b;
+           		ProductBox_T_L.enabled = b;
+           		ProductBox_T_H.enabled = b;
+           		OfferBox_T_L.enabled = b;
+          		OfferBox_T_H.enabled = b;
+           		Collector_Box_T.enabled = b;
+           		Product_Offer_T.enabled = b;
+           		ReturnPipe_T_L.enabled = b;
+           		ProductBox_WL_H.enabled = b;
+           		OfferBox_WL_H.enabled = b;
+           		TwoBox_WL_Scale.enabled = b;
+           		OfferBox_Def_WL_L.enabled = b;
+           		dataGrid1.enabled = b;
+           		dataGrid2.enabled = b;
+           		
+           		saveButton.enabled = b;
+           		
+           		
+			}
+			public function checkReturnData(data:XML):void {
+				if ( Collector_T_H.text != data.SystemSetup.row.@Collector_T_H ) {
+					Collector_T_H.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@Collector_T_H + "</font><br>";
+				} else {
+					Collector_T_H.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@Collector_T_H + "</font><br>";
+				}
+				if ( Collector_T_L.text != data.SystemSetup.row.@Collector_T_L ) {
+					Collector_T_L.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@Collector_T_L + "</font><br>";
+				} else {
+					Collector_T_L.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@Collector_T_L + "</font><br>";
+				}
+				if ( ProductBox_T_L.text != data.SystemSetup.row.@ProductBox_T_L) {
+					ProductBox_T_L.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@ProductBox_T_L + "</font><br>";
+				} else {
+					ProductBox_T_L.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@ProductBox_T_L + "</font><br>";
+				}
+				if ( ProductBox_T_H.text != data.SystemSetup.row.@ProductBox_T_H) {
+					ProductBox_T_H.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@ProductBox_T_H + "</font><br>";
+				} else {
+					ProductBox_T_H.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@ProductBox_T_H + "</font><br>";
+				}
+				if ( OfferBox_T_L.text != data.SystemSetup.row.@OfferBox_T_L) {
+					OfferBox_T_L.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@OfferBox_T_L + "</font><br>";
+				} else {
+					OfferBox_T_L.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@OfferBox_T_L + "</font><br>";
+				}
+				if ( OfferBox_T_H.text != data.SystemSetup.row.@OfferBox_T_H) {
+					OfferBox_T_H.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@OfferBox_T_H + "</font><br>";
+				} else {
+					OfferBox_T_H.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@OfferBox_T_H + "</font><br>";
+				}
+				if ( Product_Offer_T.text != data.SystemSetup.row.@Product_Offer_T) {
+					Product_Offer_T.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@Product_Offer_T + "</font><br>";
+				} else {
+					Product_Offer_T.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@Product_Offer_T + "</font><br>";
+				}
+				if ( ReturnPipe_T_L.text != data.SystemSetup.row.@ReturnPipe_T_L) {
+					ReturnPipe_T_L.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@ReturnPipe_T_L + "</font><br>";
+				} else {
+					ReturnPipe_T_L.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@ReturnPipe_T_L + "</font><br>";
+				}
+				if ( ProductBox_WL_H.text != data.SystemSetup.row.@ProductBox_WL_H) {
+					ProductBox_WL_H.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@ProductBox_WL_H + "</font><br>";
+				} else {
+					ProductBox_WL_H.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@ProductBox_WL_H + "</font><br>";
+				}
+				if ( OfferBox_WL_H.text != data.SystemSetup.row.@OfferBox_WL_H) {
+					OfferBox_WL_H.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@OfferBox_WL_H + "</font><br>";
+				} else {
+					OfferBox_WL_H.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@OfferBox_WL_H + "</font><br>";
+				}
+				if ( Collector_Box_T.text != data.SystemSetup.row.@Collector_Box_T) {
+					Collector_Box_T.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@Collector_Box_T + "</font><br>";
+				} else {
+					Collector_Box_T.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@Collector_Box_T + "</font><br>";
+				}
+				if ( Number(TwoBox_WL_Scale.text).toFixed(2) != Number(data.SystemSetup.row.@TwoBox_WL_Scale).toFixed(2)) {
+					TwoBox_WL_Scale.htmlText = "<font color='#FF0000'>" + Number(data.SystemSetup.row.@TwoBox_WL_Scale).toFixed(2) + "</font><br>";
+				} else {
+					TwoBox_WL_Scale.htmlText = "<font color='#000000'>" + Number(data.SystemSetup.row.@TwoBox_WL_Scale).toFixed(2) + "</font><br>";
+				}
+				if ( OfferBox_Def_WL_L.text != data.SystemSetup.row.@OfferBox_Def_WL_L) {
+					 OfferBox_Def_WL_L.htmlText = "<font color='#FF0000'>" + data.SystemSetup.row.@OfferBox_Def_WL_L + "</font><br>";
+				} else {
+					OfferBox_Def_WL_L.htmlText = "<font color='#000000'>" + data.SystemSetup.row.@OfferBox_Def_WL_L + "</font><br>";
+				}
+				setHoursOfferLevel(data.SystemSetup.row.@OfferBox_WL_L, data.SystemSetup.row.@OfferBox_Def_WL_L);
+				setBoostPump_Work(data.SystemSetup.row.@BoostPump_Work);
+			}
+			public function setDataFromSetupData(data:SetupData):void {
+				Collector_T_H.text = data.Collector_T_H;
+				Collector_T_L.text = data.Collector_T_L;
+				ProductBox_T_L.text = data.ProductBox_T_L;
+				ProductBox_T_H.text = data.ProductBox_T_H;
+				OfferBox_T_L.text = data.OfferBox_T_L;
+				OfferBox_T_H.text = data.OfferBox_T_H;
+				Product_Offer_T.text = data.Product_Offer_T;
+				ReturnPipe_T_L.text = data.ReturnPipe_T_L;
+				ProductBox_WL_H.text = data.ProductBox_WL_H;
+				OfferBox_WL_H.text = data.OfferBox_WL_H;
+				
+				Collector_Box_T.text = data.Collector_Box_T;
+			
+				TwoBox_WL_Scale.text = Number(data.TwoBox_WL_Scale).toFixed(2);
+				OfferBox_Def_WL_L.text = data.OfferBox_Def_WL_L;
+			}
+			public function setData(data:XML):void {
+				Collector_T_H.text = data.SystemSetup.row.@Collector_T_H;
+				Collector_T_L.text = data.SystemSetup.row.@Collector_T_L;
+				ProductBox_T_L.text = data.SystemSetup.row.@ProductBox_T_L;
+				ProductBox_T_H.text = data.SystemSetup.row.@ProductBox_T_H;
+				OfferBox_T_L.text = data.SystemSetup.row.@OfferBox_T_L;
+				OfferBox_T_H.text = data.SystemSetup.row.@OfferBox_T_H;
+				Product_Offer_T.text = data.SystemSetup.row.@Product_Offer_T;
+				ReturnPipe_T_L.text = data.SystemSetup.row.@ReturnPipe_T_L;
+				ProductBox_WL_H.text = data.SystemSetup.row.@ProductBox_WL_H;
+				OfferBox_WL_H.text = data.SystemSetup.row.@OfferBox_WL_H;
+				
+				Collector_Box_T.text = data.SystemSetup.row.@Collector_Box_T;
+			
+				TwoBox_WL_Scale.text = Number(data.SystemSetup.row.@TwoBox_WL_Scale).toFixed(2);
+				OfferBox_Def_WL_L.text = data.SystemSetup.row.@OfferBox_Def_WL_L;
+				
+				setHoursOfferLevel(data.SystemSetup.row.@OfferBox_WL_L, data.SystemSetup.row.@OfferBox_Def_WL_L);
+				setBoostPump_Work(data.SystemSetup.row.@BoostPump_Work);
+				
+			}
+			private function setBoostPump_Work(data:String):void {
+				var dataArray:Array = new Array;
+				var startTime:int = 0;
+				var endTime:int = 0;
+				var pumpDataArray:Array = new Array;
+				var pumpData:String = "";
+				var object:Object = new Object;
+				
+				for(var i:int = 0; i < data.length; i++) {
+					if(data.charAt(i) != ",") {
+						pumpData += data.charAt(i);
+					}
+					if(data.charAt(i) == "," || i == data.length - 1) {
+						dataArray.push(pumpData);
+						pumpData = "";
+					}
+				}
+				for(var j:int = 1; j < dataArray.length; j++) {
+					if(dataArray[j] == dataArray[j - 1]) {
+						endTime++;
+					} 
+					if( dataArray[j] != dataArray[j - 1] || j == dataArray.length - 1) {
+						object.startTime = startTime.toString();
+						object.endTime = endTime.toString();
+						object.isStart = dataArray[j - 1] == "1" ? true : false;
+						pumpDataArray.push(object);
+						object = new Object;
+						startTime = endTime + 1;
+						endTime = startTime;
+					}
+				}
+				
+				for(var i:int = 0; i < 24; i++) {
+					var o:Object = new Object;
+					o.startTime = "";
+					o.endTime = "";
+					o.isStart = "";
+					//var op:ObjectProxy = new ObjectProxy(o);
+					//pumpDataArray.push(op);
+					pumpDataArray.push(o);
+				}
+				
+				pumpStartArray = pumpDataArray;
+				
+			}
+			private function setHoursOfferLevel(data:String, defaultData:String):void {
+				var dataArray:Array = new Array;
+				var startTime:int = 0;
+				var endTime:int = 0;
+				var levelDataArray:Array = new Array;
+				var levelData:String = "";
+				var object:Object = new Object;
+				
+				for(var i:int = 0; i < data.length; i++) {
+					if(data.charAt(i) != ",") {
+						levelData += data.charAt(i);
+					}
+					if(data.charAt(i) == "," || i == data.length - 1) {
+						dataArray.push(levelData);
+						levelData = "";
+					}
+				}
+				
+				for(var j:int = 1; j < dataArray.length; j++) {
+					if(dataArray[j] == dataArray[j - 1]) {
+						endTime++;
+					} 
+					if( dataArray[j] != dataArray[j - 1] || j == dataArray.length - 1) {
+						object.startTime = startTime.toString();
+						object.endTime = endTime.toString();
+						object.level = dataArray[j - 1];
+						levelDataArray.push(object);
+						object = new Object;
+						startTime = endTime + 1;
+						endTime = startTime;
+					}
+					if(dataArray[j] != dataArray[j - 1] && j == dataArray.length - 1) {
+						object.startTime = j;
+						object.endTime = j;
+						object.level = dataArray[j];
+						levelDataArray.push(object);
+					}
+				}
+				for(var i:int = 0; i < levelDataArray.length; i++) {
+					if(levelDataArray[i].level == defaultData) {
+						levelDataArray.splice(i, 1);
+					}
+				}
+				
+				for(var i:int = 0; i < 24; i++) {
+					var o:Object = new Object;
+					o.startTime = "";
+					o.endTime = "";
+					o.level = "";
+					
+					levelDataArray.push(o);
+				}
+				
+				offerLevelArray = levelDataArray;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" left="10" right="10" bottom="10">
+		<mx:HBox>
+			<mx:VBox>
+			<mx:HBox>
+				<mx:TextInput editable="false" visible="false" width="0"/>
+				<mx:Text id="isLatest" width="258"/>
+			</mx:HBox>
+			<mx:Form fontSize="12" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+        	<mx:FormItem label="集热板定温出水水温（度）：">
+        		<mx:TextInput id="Collector_T_H" width="40"  restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="集热板最低水温（度）：">
+                <mx:TextInput id="Collector_T_L" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱最低水温（度）：">
+                <mx:TextInput id="ProductBox_T_L" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱最高水温（度）：">
+                <mx:TextInput id="ProductBox_T_H" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="供热水箱最低水温（度）：">
+                <mx:TextInput id="OfferBox_T_L" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="供热水箱最高水温（度）：">
+                <mx:TextInput id="OfferBox_T_H" width="40" restrict="0-9"/>
+            </mx:FormItem>
+            <mx:FormItem label="集热器-水箱循环温差（度）：">
+                <mx:TextInput id="Collector_Box_T" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱-供热水箱循环温差（度）：">
+                <mx:TextInput id="Product_Offer_T" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="回水管最低水温（度）：">
+                <mx:TextInput id="ReturnPipe_T_L" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="产热水箱满水水位（%）：">
+                <mx:TextInput id="ProductBox_WL_H" width="40" restrict="0-9"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="供热水箱满水水位（%）：">
+                <mx:TextInput id="OfferBox_WL_H" width="40" restrict="0-9"/>
+            </mx:FormItem>
+            <mx:FormItem label="产供最低水位配对比例：">
+				<mx:TextInput id="TwoBox_WL_Scale" width="40" restrict="0-9."/>
+			</mx:FormItem>
+        </mx:Form>
+			</mx:VBox>
+			
+	        <mx:VBox>
+	        	<mx:HBox>
+	        		<mx:Label text="供热水箱单位时段默认最低水位（%）："/>
+	        		<mx:TextInput width="40" id="OfferBox_Def_WL_L"/>
+	        	</mx:HBox>
+	        	<mx:DataGrid dataProvider="{offerLevelArray}" height="327" id="dataGrid1">
+				<mx:columns>
+					<mx:DataGridColumn headerText="起始时间" dataField="startTime" width="80">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput restrict="0-9" id="offerStartTime" width="70" text="{data.startTime}" change="data.startTime=offerStartTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="结束时间" dataField="endTime" width="80">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput restrict="0-9" id="offerEndTime" width="70" text="{data.endTime}" change="data.endTime=offerEndTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="水位" dataField="isStart" width="80">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput restrict="0-9" id="offerLevel" width="70" text="{data.level}" change="data.level=offerLevel.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox>
+				<mx:HBox>
+					<mx:Label text="各时段增压泵工作允许与否"/>
+					<mx:TextInput width="40" visible="false"/>
+				</mx:HBox>
+	        	
+	        	
+			<mx:DataGrid dataProvider="{pumpStartArray}" height="327"  id="dataGrid2" width="245">
+				<mx:columns>
+					<mx:DataGridColumn headerText="起始时间" dataField="startTime" width="60">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput restrict="0-9" id="pumpStartTime" width="60" text="{data.startTime}" change="data.startTime=pumpStartTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="结束时间" dataField="endTime" width="60">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:TextInput restrict="0-9" id="pumpEndTime" width="60" text="{data.endTime}" change="data.endTime=pumpEndTime.text"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="是否启用" dataField="isStart" paddingLeft="10" paddingRight="10">
+						<mx:itemRenderer>  
+							<mx:Component>  
+								<mx:HBox>
+									<mx:RadioButton label="是" selected="{data.isStart}" fontSize="12" id="highRight" groupName="right" click="data.isStart=true"/>
+									<mx:RadioButton label="否" selected="{!data.isStart}" fontSize="12" id="mediumRight" groupName="right" click="data.isStart=false"/>
+								</mx:HBox>
+							</mx:Component>  
+						</mx:itemRenderer>  
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			</mx:VBox>
+			
+		</mx:HBox>
+		
+        <mx:HBox fontSize="12">
+        	<mx:Button label="保存" fontSize="12" click="saveHandler()" id="saveButton"/>
+        	<mx:Button label="返回" fontSize="12" click="closeWindow()" id="cancelButton"/>
+        </mx:HBox>
+		</mx:VBox>
+		<mx:Script>
+			<![CDATA[
+				import mx.managers.PopUpManager;
+				public static const SHOW_CURRENT_SETUP:String = "ShowCurrentSetup";
+				private function showCurrentSetup():void {
+					this.dispatchEvent(new Event(SHOW_CURRENT_SETUP));
+				}
+			]]>
+		</mx:Script>
+</mx:TitleWindow>

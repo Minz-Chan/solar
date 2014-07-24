@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	fontSize="12" label="主控管理" width="100%" height="100%" xmlns:solarSystem="com.fallmind.solars.view.component.solarSystem.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.containers.TitleWindow;
+			import mx.managers.PopUpManager;
+			import mx.controls.menuClasses.MenuBarItem;
+	        private var pic:Class;
+	        private function createWin(className:Class):void {
+				var u:TitleWindow = className(PopUpManager.createPopUp(this, className, true));
+				u.x = this.stage.width / 2 - u.width / 2;
+				u.y = this.stage.height / 2 - u.height / 2;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%">
+	<mx:ApplicationControlBar dock="true" width="100%">
+   <mx:MenuBar id="myMenuBar" labelField="@label" itemClick="clickHandler(event)" enabled="false">
+            <mx:XMLList>
+                <menuitem label="厂家配置">
+                    <menuitem label="格式化主控器"/>
+                    <menuitem label="当前系统安装情况"/>
+                    <menuitem label="数据模式配置"/>
+                </menuitem>
+                <menuitem label="历史信息" >
+                    <menuitem label="系统历史数据"/>
+                    <menuitem label="系统历史设置参数"/>
+                    
+                    <menuitem label="系统历史警告信息"/>
+                </menuitem>
+                <menuitem label="系统查询">
+                	<menuitem label="查询系统当前设置参数"/>
+                    <menuitem label="查询系统四季默认参数"/>
+                    <!--menuitem label="查询系统密码"/-->
+                    <menuitem label="查询系统版本"/>
+                    <menuitem label="查询系统时间"/>
+                </menuitem>
+                <menuitem label="系统操作">
+                	<menuitem label="设置系统当前参数"/>
+                	<menuitem label="设置系统四季默认参数"/>
+                	<menuitem label="设置系统时间"/>
+                	<menuitem label="查询系统密码"/>
+                    <menuitem label="设置系统密码"/>
+                    <menuitem label="系统自检"/>
+                    <menuitem label="系统时间广播"/>
+                    <menuitem label="系统重启"/>
+                    <menuitem label="手动控制"/>
+                    <menuitem label="辅助设备维护"/>
+                </menuitem>
+                <menuitem label="系统管理">
+                	<menuitem label="集群管理" />
+                	<menuitem label="原料管理" />                	
+                </menuitem>
+                <menuitem label="显示切换">
+                	<menuitem label="图形模式"/>
+                	<menuitem label="数据模式"/>
+                </menuitem>
+            </mx:XMLList>
+        </mx:MenuBar>
+    </mx:ApplicationControlBar>
+	<solarSystem:CurrentDataView id="currentDataView"/>
+		
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.validators.ValidationResult;
+			import mx.events.MenuEvent;
+			import mx.events.ItemClickEvent;
+			
+			public static const FORMAT_EPPROM:String = "FormatEpprom";
+			public static const GET_HISORYDATA:String = "GethistoryData";
+			public static const GET_HISTORY_SETUP:String = "GetHistorySetup";
+			public static const GET_CURRENT_SETUP:String = "GetCurrentSetup";
+			public static const GET_SEASON_SETUP:String = "GetSeasonSetup";
+			public static const BROADCAST_TIME:String = "BroadCast_Time";
+			public static const SHOW_INSTALLATION:String = "ShowInstallation";
+			public static const MANUAL_OPERATION:String = "ManualOperation";
+			//public static const AUXILIARY_DEVICE_MAINTAINANCE:String = "AuxiliaryDeviceMaintainance";
+			public static const SHOW_AUXILIARYDEVICEMAINTAINANCE_VIEW:String = "ShowAuxiliaryDeviceMaintainanceView";	// Added by CMZ 2013/02/21 10:41:00
+			public static const SHOW_HISTORY_ALARM:String = "ShowHistoryAlarm";
+			public static const SET_CLIENT_PARAMETER:String = "SetClientParameter";
+			public static const SHOW_HISTORY_CONTROL:String = "ShowHistoryControl";
+			public static const SHOW_OFFER_DEFAULT_LOW_LEVEL:String = "ShowOfferDefaultLowLevel";
+			public static const RESTART_SYSTEM:String = "RestartSystem";
+			public static const GET_SYSTEM_VERSION:String = "GetSystemVersion";
+			public static const SET_SYSTEM_TIME:String = "SetSystemTime"; 
+			public static const GET_SYSTEM_TIME:String = "GetSystemTime";
+			public static const SET_SYSTEM_PASSWORD:String = "SetSystemPassword";
+			public static const SELF_CHECK:String = "SelfCheck";
+			public static const SET_SYSTEM_SETUP:String = "setSystemsetup";
+			public static const SET_SEASON_SETUP:String = "setSeasonSetup";
+			public static const SHOW_INSTALL_STATE:String = "ShowInstallState";
+			public static const SHOW_DATA_MODE:String  = "ShowDataMode";
+			public static const SHOW_SYSTEM_PASSWORD:String = "ShowSystemPassword";
+			public static const SWITCH_DATA_MODE:String = "SwitchDataMode";
+			public static const SWITCH_GRAPHICS_MODE:String = "SwitchGraphics";
+			public static const SHOW_COMPANY_MANAGEMENT:String = "ShowCompanyManagement";
+			public static const SHOW_FUEL_MANAGEMENT:String = "ShowFuelManagement";
+			
+			
+			private function clickHandler(e:MenuEvent):void {
+				trace(e.item.@label);
+				if(e.item.@label == "格式化主控器") {
+					formatEppromHandler();
+				} else if(e.item.@label == "系统历史数据" ) {
+					getHistoryData();
+				} else if(e.item.@label == "系统历史设置参数") {
+					getHistorySetupData();
+				} else if(e.item.@label == "查询系统当前设置参数") {
+					getCurrentSetup();
+				} else if(e.item.@label == "查询系统四季默认参数") {
+					getSeasonSetup();
+				} else if(e.item.@label == "系统时间广播") {
+					broadcastTime();
+				} else if(e.item.@label == "手动控制" ) {
+					manualOperation();
+				} else if(e.item.@label == "辅助设备维护" ) {
+					auxiliaryDeviceMaintainance();
+				} else if(e.item.@label == "系统历史警告信息") {
+					historyAlarm();
+				} else if(e.item.@label == "系统重启") {
+					restartSystem();
+				} else if(e.item.@label == "查询系统版本") {
+					getSystemVersion();
+				} else if(e.item.@label == "设置系统时间") {
+					setSystemTime();
+				} else if(e.item.@label == "查询系统时间") {
+					getSystemTime();
+				} else if(e.item.@label == "设置系统密码") {
+					setSystemPassword();
+				} else if(e.item.@label == "系统自检") {
+					selfCheck();
+				} else if(e.item.@label == "设置系统当前参数") {
+					setSystemSetup();
+				} else if(e.item.@label == "设置系统四季默认参数") {
+					setSeasonSetup();
+				} else if(e.item.@label == "当前系统安装情况") {
+					showInstallState();
+				} else if(e.item.@label == "数据模式配置"){
+					showDataMode();
+				} else if(e.item.@label == "查询系统密码"){
+					showSystemPassword();
+				} else if(e.item.@label == "数据模式") {
+					switchDataMode();
+				} else if(e.item.@label == "图形模式") {
+					switchGraphicsMode()
+				} else if(e.item.@label == "集群管理") {
+					showCompanyManagement();
+				} else if(e.item.@label == "原料管理") {
+					showFuelManagement();
+				}
+			}
+			// 当前数据的显示模式切换为数据模式
+			private function switchDataMode():void {
+				this.dispatchEvent(new Event(SWITCH_DATA_MODE));
+			}
+			// 当前数据的显示模式切换为图像模式
+			private function switchGraphicsMode():void {
+				this.dispatchEvent(new Event(SWITCH_GRAPHICS_MODE));
+			}
+			private function showSystemPassword():void {
+				this.dispatchEvent(new Event(SHOW_SYSTEM_PASSWORD));
+			}
+			
+			private function showInstallState():void {
+				this.dispatchEvent(new Event(SHOW_INSTALL_STATE));
+			}
+			
+			// 数据模式配置
+			private function showDataMode():void {
+				this.dispatchEvent(new Event(SHOW_DATA_MODE));
+			}
+			
+			// 集群管理
+			private function showCompanyManagement():void {
+			 	this.dispatchEvent(new Event(SHOW_COMPANY_MANAGEMENT));
+			}
+			
+			// 原料管理
+			private function showFuelManagement():void {
+				this.dispatchEvent(new Event(SHOW_FUEL_MANAGEMENT));
+			}
+			
+			private function setSeasonSetup():void {
+				this.dispatchEvent(new Event(SET_SEASON_SETUP));
+			}
+			private function setSystemSetup():void {
+				this.dispatchEvent(new Event(SET_SYSTEM_SETUP));
+			}
+			private function selfCheck():void {
+				this.dispatchEvent(new Event(SELF_CHECK));
+			}
+			private function setSystemPassword():void {
+				this.dispatchEvent(new Event(SET_SYSTEM_PASSWORD));
+			}
+			private function getSystemTime():void {
+				this.dispatchEvent(new Event(GET_SYSTEM_TIME));
+			}
+			private function setSystemTime():void {
+				this.dispatchEvent(new Event(SET_SYSTEM_TIME));
+			}
+			private function getSystemVersion():void {
+				this.dispatchEvent(new Event(GET_SYSTEM_VERSION));
+			}
+			private function restartSystem():void {
+				this.dispatchEvent(new Event(RESTART_SYSTEM));
+			}
+			
+			private function historyAlarm():void {
+				this.dispatchEvent(new Event(SHOW_HISTORY_ALARM));
+			}
+			private function historyControl():void {
+				this.dispatchEvent(new Event(SHOW_HISTORY_CONTROL));
+			}
+			private function setClientParameter():void {
+				this.dispatchEvent(new Event(SET_CLIENT_PARAMETER));
+			}
+			
+			
+			private function showInstallation():void {
+				this.dispatchEvent(new Event(SHOW_INSTALLATION));
+			}
+			private function formatEppromHandler():void {
+				this.dispatchEvent(new Event(FORMAT_EPPROM));
+			}
+			private function getHistoryData():void {
+				this.dispatchEvent(new Event(GET_HISORYDATA));
+			}
+			private function getHistorySetupData():void {
+				this.dispatchEvent(new Event(GET_HISTORY_SETUP));
+			}
+			private function getCurrentSetup():void {
+				this.dispatchEvent(new Event(GET_CURRENT_SETUP));
+			}
+			private function getSeasonSetup():void {
+				this.dispatchEvent(new Event(GET_SEASON_SETUP));
+			}
+			private function broadcastTime():void {
+				this.dispatchEvent(new Event(BROADCAST_TIME));
+			}
+			private function manualOperation():void {
+				this.dispatchEvent(new Event(MANUAL_OPERATION));
+			}
+			private function auxiliaryDeviceMaintainance():void {
+				this.dispatchEvent(new Event(SHOW_AUXILIARYDEVICEMAINTAINANCE_VIEW));
+			}
+						
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

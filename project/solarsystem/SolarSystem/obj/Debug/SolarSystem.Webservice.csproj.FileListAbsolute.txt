@@ -1,0 +1,26 @@
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\obj\Debug\SolarSystem.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\obj\Debug\SolarSystem.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.BLL.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.DAL.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.Util.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.DAL.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.Util.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.BLL.pdb
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.Model.dll
+C:\Documents and Settings\lenovo\My Documents\Visual Studio 2008\Projects\GuestBook\SolarSystem\SolarSystem\bin\SolarSystem.Model.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.BLL.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.DAL.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.Model.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.Util.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.BLL.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.DAL.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.Model.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem\bin\SolarSystem.Util.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem\obj\Debug\ResolveAssemblyReference.cache
+E:\Project\VS2010\SolarSystem_src\SolarSystem\obj\Debug\SolarSystem.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem\obj\Debug\SolarSystem.pdb

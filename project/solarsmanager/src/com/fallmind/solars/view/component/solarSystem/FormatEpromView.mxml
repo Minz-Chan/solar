@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			public static const CONFIRM_FORMAT_EPROM:String = "ConfirmFormatEprom";
+			public static const CLOSE_FORMAT_EPROM:String = "CloseFormatEprom";
+			private function confirmFormat():void {
+				this.dispatchEvent(new Event(CONFIRM_FORMAT_EPROM));
+			}
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_FORMAT_EPROM));
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" left="10" right="10" bottom="10">
+		<mx:Text id="stateText" text="确定要格式化EPROM ?"/>
+		<mx:HBox>
+			<mx:Button label="格式化" click="confirmFormat()" id="formatButton"/>
+			<mx:Button label="返回" click="closeWindow()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

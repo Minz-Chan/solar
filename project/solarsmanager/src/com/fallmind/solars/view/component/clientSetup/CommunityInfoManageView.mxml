@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" label="小区信息管理" width="100%" height="100%" fontSize="12">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DropdownEvent;
+			import mx.containers.TitleWindow;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent; 
+			
+			public static const COUNTRY_TYPE:String = "1";
+			public static const PROVINCE_TYPE:String = "2";
+			public static const CITY_TYPE:String = "3";
+			public static const DIRECT_CITY_TYPE:String = "4";
+			
+			public static const DELETE_COMMUNITY:String = "DeleteCommunity";
+			public static const ADD_COMMUNITY:String = "AddCommunity";
+			public static const EDIT_COMMUNITY:String = "EditCommunity";
+			
+			[Bindable]
+			public var countryButtonData:XMLList;
+			[Bindable]
+			public var provinceButtonData:XMLList;
+			[Bindable]
+			public var cityButtonData:XMLList;
+			[Bindable]
+			public var communityData:XMLList;
+			
+			public var totalData:XML;
+			public var totalCommunityData:XMLList;
+			
+			public static const INIT:String = "Init";
+			
+			
+			
+			private function addCommunity():void {
+				this.dispatchEvent(new Event(ADD_COMMUNITY));
+			}
+			
+			private function editCommunity():void {
+				this.dispatchEvent(new Event(EDIT_COMMUNITY));
+			}
+			private function deleteCommunity():void {
+				var alert:Alert = Alert.show("确认删除小区？", "确认删除", Alert.YES | Alert.NO);
+				
+				alert.addEventListener(CloseEvent.CLOSE, makeSureDeleteHandler);
+				
+			}
+			
+			private function makeSureDeleteHandler(e:CloseEvent):void {
+				switch(e.detail) {
+					case Alert.YES:
+						this.dispatchEvent(new Event(DELETE_COMMUNITY));
+						break;
+					case Alert.NO:
+						break;
+				}
+			}
+			
+			private function closeHandler(e:DropdownEvent):void {
+				if(ComboBox(e.target).selectedItem == null) {
+					return;
+				}
+				if( ComboBox(e.target).selectedItem.@TypeLevel == COUNTRY_TYPE) {
+					provinceButtonData = totalData.row.(@BelongRel == countryBox.selectedItem.@AreaID);
+					if(provinceButtonData.length() != 0) {
+						cityButtonData = totalData.row.(@BelongRel == provinceBox.selectedItem.@AreaID);
+						if(cityButtonData.length() != 0) {
+							communityData = totalCommunityData.(@BelongAreaID == cityBox.selectedItem.@AreaID);
+						}
+					} else {
+						provinceButtonData = null;
+						cityButtonData = null;
+						communityData = null;
+					}
+				} else if( ComboBox(e.target).selectedItem.@TypeLevel == PROVINCE_TYPE ) {
+					cityButtonData = totalData.row.(@BelongRel==provinceBox.selectedItem.@AreaID);
+					if(cityButtonData.length() != 0) {
+						communityData = totalCommunityData.(@BelongAreaID == cityBox.selectedItem.@AreaID);
+					} else {
+						communityData = null;
+					}
+				} else if( ComboBox(e.target).selectedItem.@TypeLevel == CITY_TYPE) {
+					if( cityButtonData.length() != 0) {
+						communityData = totalCommunityData.(@BelongAreaID == cityBox.selectedItem.@AreaID);
+					} else {
+						communityData = null;
+					}
+				} else if( ComboBox(e.target).selectedItem.@TypeLevel == DIRECT_CITY_TYPE) {
+					cityButtonData = null;
+					communityData = totalCommunityData.(@BelongAreaID == provinceBox.selectedItem.@AreaID);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label x="0" y="0" text="小区信息管理" fontSize="16"/>
+	<mx:Canvas left="10" right="10" bottom="10" top="30">
+		<mx:Canvas width="100%">
+			<mx:HBox>
+				<mx:ComboBox id="countryBox" fontSize="14" width="120" labelField="@AreaName" dataProvider="{countryButtonData}" close="closeHandler(event);"></mx:ComboBox>
+				<mx:ComboBox id="provinceBox" fontSize="14" width="120" labelField="@AreaName" dataProvider="{provinceButtonData}" close="closeHandler(event);"></mx:ComboBox>
+				<mx:ComboBox id="cityBox" fontSize="14" width="120" labelField="@AreaName" dataProvider="{cityButtonData}" close="closeHandler(event);"></mx:ComboBox>
+			</mx:HBox>
+			<mx:HBox right="0" top="0">
+				<mx:Button label="添加" fontSize="14" width="60" click="addCommunity()"/>
+				<mx:Button label="修改" fontSize="14" width="60" click="editCommunity()"/>
+				<mx:Button label="删除" fontSize="14" width="60" click="deleteCommunity()"/>
+			</mx:HBox>
+			
+		</mx:Canvas>
+		<mx:DataGrid id="communityDataGrid" width="100%" height="88%" bottom="0" dataProvider="{communityData}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="小区名称" dataField="@CommunityName"/>
+				<mx:DataGridColumn headerText="小区地址" dataField="@CommunityAddress"/>
+				<mx:DataGridColumn headerText="小区电话" dataField="@CommunityPhone"/>
+				<mx:DataGridColumn headerText="小区密码" dataField="@CommunityPassword"/>
+				<mx:DataGridColumn headerText="主管单位" dataField="@ManageUnit"/>
+				<mx:DataGridColumn headerText="主管人" dataField="@Manager"/>
+				<mx:DataGridColumn headerText="主管人电话" dataField="@ManagerPhone"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:Canvas>
+	
+</mx:Canvas>

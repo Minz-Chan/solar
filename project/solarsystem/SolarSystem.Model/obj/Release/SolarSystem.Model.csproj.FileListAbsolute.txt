@@ -1,0 +1,5 @@
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Model\bin\Release\SolarSystem.Model.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Model\bin\Release\SolarSystem.Model.pdb
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Model\obj\Release\ResolveAssemblyReference.cache
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Model\obj\Release\SolarSystem.Model.dll
+E:\Project\VS2010\SolarSystem_src\SolarSystem.Model\obj\Release\SolarSystem.Model.pdb

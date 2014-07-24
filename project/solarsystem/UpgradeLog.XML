@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="SolarSystem">
+</Property><Property Name="Solution File" Value="E:\Project\VS2010\SolarSystem_src\SolarSystem.sln">
+</Property><Property Name="User Options File" Value="E:\Project\VS2010\SolarSystem_src\SolarSystem.suo">
+</Property><Property Name="Date" Value="2012年7月27日">
+</Property><Property Name="Time" Value="14:54">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="SolarSystem.sln" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.sln">
+</Event><Event ErrorLevel="0" Project="" Source="SolarSystem.suo" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.suo">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\SolarSystem.Webservice.csproj" Description="Project file successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem\SolarSystem.Webservice.csproj">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\SolarSystem.Webservice.csproj.user" Description="Project user file successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem\SolarSystem.Webservice.csproj.user">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\Service1.asmx.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem\Service1.asmx.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\Service1.asmx" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem\Service1.asmx">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\Web.config" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem\Web.config">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\SolarSystem.Webservice.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="SolarSystem.Webservice" Source="SolarSystem\SolarSystem.Webservice.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\SolarSystem.DAL.csproj" Description="Project file successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\SolarSystem.DAL.csproj">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Interface\DALFactory.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Interface\DALFactory.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Impl\CommunityInfoImpl.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Impl\CommunityInfoImpl.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Impl\RegionInfoImpl.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Impl\RegionInfoImpl.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Impl\SystemInfoImpl.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Impl\SystemInfoImpl.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Impl\SystemOperationIml.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Impl\SystemOperationIml.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Impl\UserInfoImpl.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Impl\UserInfoImpl.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Interface\ICommunityInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Interface\ICommunityInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Interface\IRegionInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Interface\IRegionInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Interface\ISystemInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Interface\ISystemInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Interface\ISystemOperation.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Interface\ISystemOperation.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Interface\IUserInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Interface\IUserInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.DAL\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\SolarSystem.DAL.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="SolarSystem.DAL" Source="SolarSystem.DAL\SolarSystem.DAL.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Utils" Source="SolarSystem.Util\SolarSystem.Utils.csproj" Description="Project file successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Util\SolarSystem.Utils.csproj">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Utils" Source="SolarSystem.Util\DbHelpSQL.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Util\DbHelpSQL.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Utils" Source="SolarSystem.Util\DESEncrypt.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Util\DESEncrypt.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Utils" Source="SolarSystem.Util\LogManager.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Util\LogManager.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Utils" Source="SolarSystem.Util\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Util\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Utils" Source="SolarSystem.Util\SolarSystem.Utils.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="SolarSystem.Utils" Source="SolarSystem.Util\SolarSystem.Utils.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\SolarSystem.BLL.csproj" Description="Project file successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.BLL\SolarSystem.BLL.csproj">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\CommunityInfoManager.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.BLL\CommunityInfoManager.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\RegionManager.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.BLL\RegionManager.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\SolarSystemManager.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.BLL\SolarSystemManager.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\SystemOperator.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.BLL\SystemOperator.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\UserManager.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.BLL\UserManager.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.BLL\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\SolarSystem.BLL.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="SolarSystem.BLL" Source="SolarSystem.BLL\SolarSystem.BLL.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Model" Source="SolarSystem.Model\SolarSystem.Model.csproj" Description="Project file successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Model\SolarSystem.Model.csproj">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Model" Source="SolarSystem.Model\CommunityInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Model\CommunityInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Model" Source="SolarSystem.Model\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Model\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Model" Source="SolarSystem.Model\UserDetailData.cs" Description="File successfully backed up as E:\Project\VS2010\SolarSystem_src\Backup\SolarSystem.Model\UserDetailData.cs">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Model" Source="SolarSystem.Model\SolarSystem.Model.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="SolarSystem.Model" Source="SolarSystem.Model\SolarSystem.Model.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="SolarSystem.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="SolarSystem.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Webservice" Source="SolarSystem\SolarSystem.Webservice.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="SolarSystem.DAL" Source="SolarSystem.DAL\SolarSystem.DAL.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Utils" Source="SolarSystem.Util\SolarSystem.Utils.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="SolarSystem.BLL" Source="SolarSystem.BLL\SolarSystem.BLL.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="SolarSystem.Model" Source="SolarSystem.Model\SolarSystem.Model.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

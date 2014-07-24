@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" fillAlphas="[1,0.5]">
+	
+	<mx:Script>
+		<![CDATA[
+			public static const ALARM_CLICK:String = "AlarmClick";
+			public static const USER_QUIT:String = "UserQuit";
+			public static const FAILED_ORDER_CLICK:String = "FailedOrderClick";
+			public static const SHOW_COMMUNICATE_STATUS:String = "ShowCommunicateStatus";
+			
+			[Embed(source="resource/error.png")]
+			[Bindable]
+       		private var errorIcon:Class;
+       		[Embed(source="resource/success.png")]
+       		[Bindable]
+       		private var okIcon:Class;
+       		
+       		public function setCommunicateIconOk():void {
+       			communicateStatus.setStyle("icon",okIcon);
+       		}
+       		public function setCommunicateIconError():void {
+       			communicateStatus.setStyle("icon",errorIcon);
+       		}
+			
+			public function init():void {
+				timeText.text = "时间:" + new Date().toTimeString();
+			}		
+			private function alarmClickHandler():void {
+				this.dispatchEvent(new Event(ALARM_CLICK));
+			}
+			private function userQuit():void {
+				this.dispatchEvent(new Event(USER_QUIT));
+			}
+			private function failedOrderClickHandler():void {
+				this.dispatchEvent(new Event(FAILED_ORDER_CLICK));
+			}
+			private function showCommunicateStatus():void {
+				this.dispatchEvent(new Event(SHOW_COMMUNICATE_STATUS));
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas width="100%">
+		<mx:HBox left="0">
+			<mx:Text id="timeText" text="时间"/>
+			<mx:Text id="userText"/>
+			<mx:Text id="userType"/>
+			<mx:Text id="currentCommunity"/>
+			<mx:Text id="currentSystem"/>
+		</mx:HBox>
+		
+		<mx:HBox right="0">
+			<mx:LinkButton id="communicateStatus" color="#FF4800" label="通讯状态" click="showCommunicateStatus()" icon="{okIcon}"/>
+			<mx:LinkButton id="alarmNumText" color="#FF4800" label="警告" click="alarmClickHandler()" enabled="false" icon="@Embed('resource/alarm.png')"/>
+			<!--mx:LinkButton id="quit" label="退出" click="userQuit()"/-->
+		</mx:HBox>
+		
+		
+		
+	</mx:Canvas>
+</mx:ApplicationControlBar>

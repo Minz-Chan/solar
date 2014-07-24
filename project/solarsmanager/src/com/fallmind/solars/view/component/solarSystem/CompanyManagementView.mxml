@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" height="375" width="455" showCloseButton="true"
+	close="this.dispatchEvent(new Event(CLOSE_COMPANYMANAGEMENT_VIEW))">
+
+<mx:Script>
+	<![CDATA[
+		import com.fallmind.solars.ApplicationFacade;
+		import mx.collections.ArrayCollection;
+		public static const CLOSE_COMPANYMANAGEMENT_VIEW:String = "CloseCompanyManagementView";
+		public static const ADD_COMPANY:String = "AddCompany"; 
+		public static const SAVE_COMPANY_INFO:String = "SaveCompanyInfo";
+		public static const MODIFY_COMPANY_INFO:String = "ModifyCompanyInfo";
+		public static const DELETE_COMPANY:String = "DeleteCompany";
+		public static const QUERY_FOR_ALL_COMPANY_INFO:String = "QueryForAllCompanyInfo";	
+		
+		[Bindable]
+		public var companyList:ArrayCollection;
+		
+		
+		private function itemSelected(e:Event): void{
+			var obj:Object = dg.selectedItem;
+			companyName.text = obj.companyName.toString();
+			companyIdentifier.text = obj.companyIdentifier.toString();
+			bg_login.text = obj.bg_login.toString();
+			bg_logo.text = obj.bg_logo.toString();
+			
+			lblPrompt.text = "";
+		}
+		
+		
+	]]>
+</mx:Script>
+
+<mx:VBox>
+	<mx:Form>
+		<mx:HBox height="15">
+			<mx:Label id="lblPrompt" text="" color="#FF0000" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:FormItem label="集群名称：">
+					<mx:TextInput id="companyName" width="100" />
+			</mx:FormItem>
+			<mx:FormItem label="集群标识：">
+					<mx:TextInput id="companyIdentifier" width="100"  />
+			</mx:FormItem>
+		</mx:HBox>	
+		<mx:HBox>
+			<mx:FormItem label="登录LOGO（URL）：">
+				<mx:TextInput id="bg_login" width="269"  />
+			</mx:FormItem>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:FormItem label="系统LOGO（URL）：">
+				<mx:TextInput id="bg_logo" width="269"  />
+			</mx:FormItem>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:DataGrid id="dg" width="394" height="88%" bottom="0" dataProvider="{companyList}" itemClick="itemSelected(event)">
+				<mx:columns>
+					<mx:DataGridColumn headerText="ID" dataField="companyId" />
+					<mx:DataGridColumn headerText="名称" dataField="companyName"/>
+					<mx:DataGridColumn headerText="标识" dataField="companyIdentifier"/>
+					<mx:DataGridColumn headerText="登录LOGO" dataField="bg_login"/>
+					<mx:DataGridColumn headerText="系统LOGO" dataField="bg_logo"/>
+					<mx:DataGridColumn headerText="状态" dataField="status" visible="false" />
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:HBox>
+		
+		<mx:HBox horizontalAlign="right">
+			<mx:Button label="查询"  x="439" y="350" width="60"	 labelPlacement="right" click="this.dispatchEvent(new Event(QUERY_FOR_ALL_COMPANY_INFO));"/>
+			<mx:Button label="新增" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(ADD_COMPANY))"/>
+			<mx:Button label="删除" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(DELETE_COMPANY))"/>
+			<mx:Button label="修改" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(MODIFY_COMPANY_INFO))" />
+
+			<mx:Button label="保存" width="60" labelPlacement="right" click="this.dispatchEvent(new Event(SAVE_COMPANY_INFO))"/>
+			<mx:Button label="返回" width="60" click="this.dispatchEvent(new Event(CLOSE_COMPANYMANAGEMENT_VIEW))" labelPlacement="right"/>
+		</mx:HBox>
+		
+	</mx:Form>
+</mx:VBox>
+	
+	
+	<mx:Array id="validators">
+		<mx:StringValidator id="validateCompanyName" source="{companyName}" property="text" required="true" />
+		<mx:RegExpValidator id="regExpCompanyIdentifier" source="{companyIdentifier}" property="text" required="true"  expression="{'^[a-zA-Z]\{4,20\}$'}" noMatchError="格式错误,请使用大小写字母组合,长度在4-20" />  
+        <mx:RegExpValidator id="regExpUrl" source="{bg_login}" property="text" required="true"  expression="{'^[a-zA-z]+://[\\s\\S]*$'}" noMatchError="请以http://xxx.com/xxx形式输入" />         
+        <mx:RegExpValidator id="regExpUrl1"  source="{bg_logo}" property="text" required="true"  expression="{'^[a-zA-z]+://[\\s\\S]*$'}" noMatchError="请以http://xxx.com/xxx形式输入" />
+	</mx:Array>
+	
+	
+</mx:TitleWindow>

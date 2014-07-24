@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" height="425" showCloseButton="true"
+	close="this.dispatchEvent(new Event(CLOSE_DATAMODE_VIEW))">
+
+<mx:Script>
+	<![CDATA[
+		import mx.validators.Validator;
+		import com.fallmind.solars.model.CheckProxy.SysMeterageUnitConfig;
+		
+		[Bindable]
+		public var totalWaterType:Array = [
+			{label:"冷水表", data: 1},
+			{label:"未安装", data: 0}
+		];
+		
+		[Bindable]
+		public var totalEleType:Array = [ 
+			{label:"电能表", data: 1},
+			{label:"未安装", data: 0}
+		];
+		
+		[Bindable]
+		public var heatSupplyType:Array = [
+			{label:"供热热量", data: 2},
+			{label:"供热流量", data: 1},
+			{label:"供热未计量", data: 0},
+		];	
+		
+		[Bindable]
+		public var backWaterType:Array = [
+			{label:"回水热量", data: 2},
+			{label:"回水流量", data: 1},
+			{label:"回水未计量", data: 0}
+		];
+		
+		[Bindable]
+		public var collector1Type:Array = [
+			{label:"集Ⅰ循环流量",data: 1},
+			{label:"集Ⅰ循环得热量", data: 2},
+			{label:"集Ⅰ循环未计量", data: 0}
+		];
+		
+		[Bindable]
+		public var collector2Type:Array = [
+			{label:"集Ⅱ循环流量",data: 1},
+			{label:"集Ⅱ循环得热量", data: 2},
+			{label:"集Ⅱ循环未计量", data: 0}
+		];
+		
+		[Bindable]
+		public var collector3Type:Array = [
+			{label:"集Ⅲ循环流量", data: 1},
+			{label:"集Ⅲ循环得热量", data: 2},
+			{label:"集Ⅲ循环未计量", data: 0}
+		];
+		
+		[Bindable]
+		public var auxiliaryType:Array = [
+				{label:"电锅炉辅助", data: 1},
+				{label:"热泵辅助", data: 2},
+				{label:"蒸汽辅助", data: 3},
+				{label:"燃油辅助", data: 4},
+				{label:"燃气辅助", data: 5},
+				{label:"电辅助", data: 6},
+				{label:"辅助未计量", data: 0}
+		];
+		
+		/* [Bindable]
+		public var oilType:Array = [
+				{label:"原油", data: 1},
+				{label:"燃油", data: 1},
+				{label:"汽油", data: 1},
+				{label:"煤油", data: 1},
+				{label:"柴油", data: 1},
+				{label:"煤焦油", data: 1}
+		];
+		
+		[Bindable]
+		public var gasType:Array = [
+				{label:"液化石油气", data: 1},
+				{label:"炼厂干气", data: 1},
+				{label:"油田天然气", data: 1},
+				{label:"气田天然气", data: 1},
+				{label:"煤矿瓦斯气", data: 1},
+				{label:"焦炉煤气", data: 1},
+				{label:"焦炭制气", data: 1},
+				{label:"压力气化煤气", data: 1},
+				{label:"水煤气", data: 1},
+				{label:"发生炉煤气", data: 1},
+				{label:"重油催化裂解煤气", data: 1},
+				{label:"重油热裂解煤气", data: 1},
+				{label:"甲笨", data: 1}
+		]; */
+		
+		
+		public static const CLOSE_DATAMODE_VIEW:String = "CloseDataMode";
+		public static const QUERY_DATAMODE_VIEW:String = "QueryDataMode";
+		public static const SAVE_DATAMODE_VIEW:String = "SaveDataMode";
+		
+		
+		public var configBuf:SysMeterageUnitConfig;
+		
+		
+		
+		public function saveData():void{
+				
+			if(!checkInput()){
+				return;
+			}
+		
+			saveSystemMeterageSetting();
+			
+			this.dispatchEvent(new Event(SAVE_DATAMODE_VIEW));
+		}
+		
+		public function checkInput():Boolean{
+			var isAllCorrect:Boolean = false;
+			
+			if(Validator.validateAll(validators).length == 0){
+				isAllCorrect = true;
+			}
+			
+			
+			return isAllCorrect;
+		}
+		
+		public function saveSystemMeterageSetting():void{
+			var config:SysMeterageUnitConfig = new SysMeterageUnitConfig();
+			
+			// 系统水电计量
+			config.totalWaterType		= cbTotalWaterType.selectedItem.data;
+			config.totalWaterFactor 	= Number(txtTotalWaterFactor.text);
+			config.totalEleType 		= cbTotalEleType.selectedItem.data;
+			config.totalEleFactor 		= Number(txtTotalEleFactor.text);
+			
+			// 供热单元计量
+			config.heatSupplyType 		= cbHeatSupplyType.selectedItem.data;
+			config.heatSupplyFactor		= Number(txtHeatSupplyFactor.text);
+			config.backWaterType 		= cbBackWaterType.selectedItem.data;
+			config.backWaterFactor 		= Number(txtBackWaterFactor.text);
+			
+			// 集热单元计量
+			config.heatCollector1Type 	= cbCollector1Type.selectedItem.data;
+			config.heatCollector1Factor = Number(txtHeatCollector1Factor.text);
+			config.heatCollector2Type 	= cbCollector2Type.selectedItem.data;
+			config.heatCollector2Factor = Number(txtHeatCollector2Factor.text);
+			config.heatCollector3Type 	= cbCollector3Type.selectedItem.data;
+			config.heatCollector3Factor = Number(txtHeatCollector3Factor.text);
+			
+			// 辅助单元计量
+			config.auxiliaryType 		= cbAuxiliaryType.selectedItem.data;
+			config.auxiliaryEleFactor 	= Number(txtAuxiliaryEleFactor.text);
+			config.airHeat_COP		 	= Number(txtAirHeat_COP.text);
+			/* if(cbAuxiliaryType.selectedLabel == "燃油辅助"){
+				config.auxiliaryFuelId = cbOilType.selectedItem.data;
+				config.auxiliaryFuelName = cbOilType.selectedLabel;
+			}else if(cbAuxiliaryType.selectedLabel == "燃气辅助"){
+				config.auxiliaryFuelId = cbGasType.selectedItem.data;
+				config.auxiliaryFuelName = cbGasType.selectedLabel;
+			}else{
+				config.auxiliaryFuelId = 0;
+				config.auxiliaryFuelName = "";
+			} */
+			
+			// 系统泵阀配置项
+			config.waterInflowCollector1Type 	= int(rgWaterInflowCollector1Type.selectedValue);
+			config.waterInflowCollector2Type 	= int(rgWaterInflowCollector2Type.selectedValue);
+			config.waterInflowCollector3Type	= int(rgWaterInflowCollector3Type.selectedValue);
+			
+			config.cPumpCollector1Status		= (chbCPumpCollector1Status.selected == true ? 1 : 0); 
+			config.cPumpCollector2Status 		= (chbCPumpCollector2Status.selected == true ? 1 : 0);
+			config.cPumpCollector3Status 		= (chbCPumpCollector3Status.selected == true ? 1 : 0);
+			
+			config.pSWaterAddPumpType 			= int(rgPSWaterAddPumpType.selectedValue);
+			config.pSCirclePumpType				= int(rgPSCirclePumpType.selectedValue);
+			config.aWaterAddPumpType 			= int(rgAWaterAddPumpType.selectedValue);
+			
+			config.backwaterCirclePumpStatus 	= (chbBackwaterCirclePumpStatus.selected == true ? 1 : 0);
+			config.backwaterEleValveStatus 		= (chbBackwaterEleValveStatus.selected == true ? 1 : 0);
+			config.supplyHeatCirclePumpStatus 	= (chbSupplyHeatCirclePumpStatus.selected == true ? 1 : 0);
+			config.supplyHeatEleValveStatus 	= (chbSupplyHeatEleValveStatus.selected == true ? 1 : 0);
+			config.aHeatAddCirclePumpStatus 	= (chbAHeatAddCirclePumpStatus.selected == true ? 1 : 0);
+			config.aHeatAddEleValveStatus 		= (chbAHeatAddEleValveStatus.selected == true ? 1 : 0);
+			
+			configBuf = config;
+		}
+		
+		/**
+		 * UI界面状态更新
+		 */ 
+		public function updateUI():void{
+			
+			
+			if(cbTotalWaterType.selectedLabel == "未安装"){
+				txtTotalWaterFactor.enabled = false;
+			}else{
+				txtTotalWaterFactor.enabled = true;
+			}
+			
+			if(cbTotalEleType.selectedLabel == "未安装"){
+				txtTotalEleFactor.enabled = false;
+			}else{
+				txtTotalEleFactor.enabled = true;
+			}
+			
+			if(cbHeatSupplyType.selectedLabel == "供热未计量"){
+				txtHeatSupplyFactor.enabled = false;
+				lblHeatSupplyType.text = "热量表";
+			}else if(cbHeatSupplyType.selectedLabel == "供热流量"){
+				txtHeatSupplyFactor.enabled = true;
+				lblHeatSupplyType.text = "热水表";
+			}else if(cbHeatSupplyType.selectedLabel == "供热热量"){
+				txtHeatSupplyFactor.enabled = true;
+				lblHeatSupplyType.text = "热量表";
+			}
+			
+			if(cbBackWaterType.selectedLabel == "回水未计量"){
+				txtBackWaterFactor.enabled = false;
+				lblBackWaterType.text = "热量表";
+			}else if(cbBackWaterType.selectedLabel == "回水流量"){
+				txtBackWaterFactor.enabled = true;
+				lblBackWaterType.text = "热水表";
+			}else if(cbBackWaterType.selectedLabel == "回水热量"){
+				txtBackWaterFactor.enabled = true;
+				lblBackWaterType.text = "热量表";
+			}
+			
+			
+			if(cbCollector1Type.selectedLabel == "集Ⅰ循环未计量"){
+				txtHeatCollector1Factor.enabled = false;
+				lblCollector1Type.text = "热量表";
+			}else if(cbCollector1Type.selectedLabel == "集Ⅰ循环流量"){
+				txtHeatCollector1Factor.enabled = true;
+				lblCollector1Type.text = "热水表";
+			}else if(cbCollector1Type.selectedLabel == "集Ⅰ循环得热量"){
+				txtHeatCollector1Factor.enabled = true;
+				lblCollector1Type.text = "热量表";
+			}
+			
+			if(cbCollector2Type.selectedLabel == "集Ⅱ循环未计量"){
+				txtHeatCollector2Factor.enabled = false;
+				lblCollector2Type.text = "热量表";
+			}else if(cbCollector2Type.selectedLabel == "集Ⅱ循环流量"){
+				txtHeatCollector2Factor.enabled = true;
+				lblCollector2Type.text = "热水表";
+			}else if(cbCollector2Type.selectedLabel == "集Ⅱ循环得热量"){
+				txtHeatCollector2Factor.enabled = true;
+				lblCollector2Type.text = "热量表";
+			}
+			
+			if(cbCollector3Type.selectedLabel == "集Ⅲ循环未计量"){
+				txtHeatCollector3Factor.enabled = false;
+				lblCollector3Type.text = "热量表";
+			}else if(cbCollector3Type.selectedLabel == "集Ⅲ循环流量"){
+				txtHeatCollector3Factor.enabled = true;
+				lblCollector3Type.text = "热水表";
+			}else if(cbCollector3Type.selectedLabel == "集Ⅲ循环得热量"){
+				txtHeatCollector3Factor.enabled = true;
+				lblCollector3Type.text = "热量表";
+			}
+			
+			if(cbAuxiliaryType.selectedLabel == "辅助未计量"){
+				cbOilType.enabled = false;
+				cbGasType.enabled = false;
+				txtAuxiliaryEleFactor.enabled = false;
+				txtAirHeat_COP.enabled = false;
+				lblAuxiliaryType.text = "电能表";
+				lblAuxiliaryEleFactor.text = "电Eff:";
+			}else{
+				cbOilType.enabled = false;
+				cbGasType.enabled = false;
+				txtAuxiliaryEleFactor.enabled = true;
+				txtAirHeat_COP.enabled = true;
+				if(cbAuxiliaryType.selectedLabel == "电锅炉辅助"){
+					lblAuxiliaryType.text = "电能表";
+					lblAuxiliaryEleFactor.text = "电Eff:";
+				}else if(cbAuxiliaryType.selectedLabel == "热泵辅助"){
+					lblAuxiliaryType.text = "电能表";
+					lblAuxiliaryEleFactor.text = "电COP:";
+				}else if(cbAuxiliaryType.selectedLabel == "蒸汽辅助"){
+					lblAuxiliaryType.text = "涡街器";
+					lblAuxiliaryEleFactor.text = "汽Eff:";
+				}else if(cbAuxiliaryType.selectedLabel == "燃油辅助"){
+					cbOilType.enabled = true;
+					cbGasType.enabled = false;
+					lblAuxiliaryType.text = "燃油表";
+					lblAuxiliaryEleFactor.text = "油Eff:";
+				}else if(cbAuxiliaryType.selectedLabel == "燃气辅助"){
+					cbOilType.enabled = false;
+					cbGasType.enabled = true;
+					lblAuxiliaryType.text = "燃气表";
+					lblAuxiliaryEleFactor.text = "气Eff:";
+				}else if(cbAuxiliaryType.selectedLabel == "电辅助"){
+					lblAuxiliaryType.text = "电能表";
+					lblAuxiliaryEleFactor.text = "电Eff:";
+				}
+			}
+			
+		}
+		
+	]]>
+</mx:Script>
+<mx:HBox left="7" top="10">
+	<mx:VBox>
+		<mx:VBox>
+			<mx:Text  text="系统水电计量：" height="20"/>
+			<mx:FormItem label="总进水表">
+				<mx:HBox>
+					<mx:ComboBox id="cbTotalWaterType" dataProvider="{totalWaterType}" width="106" change="updateUI()"></mx:ComboBox>
+					<mx:Text  text="倍率:"/>
+					<mx:TextInput id="txtTotalWaterFactor" text="0" width="60" />		
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem label="系统耗电">
+				<mx:HBox>
+					<mx:ComboBox id="cbTotalEleType" dataProvider="{totalEleType}" width="106" change="updateUI()"></mx:ComboBox>
+					<mx:Text  text="倍率:"/>
+					<mx:TextInput id="txtTotalEleFactor" text="0" width="60" />		
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:VBox>
+		
+		<mx:VBox>
+			<mx:Text  text="供热单元计量："/>
+			<mx:FormItem>
+				<mx:HBox>
+					<mx:ComboBox id="cbHeatSupplyType" dataProvider="{heatSupplyType}" width="110" change="updateUI()"></mx:ComboBox>
+					<mx:Text id="lblHeatSupplyType" text="热量表"/>
+					<mx:Text  text="倍率:"/>
+					<mx:TextInput id="txtHeatSupplyFactor" text="0" width="60" />		
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:HBox>
+					<mx:ComboBox id="cbBackWaterType" dataProvider="{backWaterType}" width="110" change="updateUI()"></mx:ComboBox>
+					<mx:Text id="lblBackWaterType"  text="热量表"/>
+					<mx:Text  text="倍率:"/>
+					<mx:TextInput id="txtBackWaterFactor" text="0" width="60" />		
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:VBox>
+		
+		<mx:VBox>
+			<mx:Text  text="集热单元计量："/>
+			<mx:FormItem>
+				<mx:HBox>
+					<mx:ComboBox id="cbCollector1Type" dataProvider="{collector1Type}" width="110" change="updateUI()"></mx:ComboBox>
+					<mx:Text id="lblCollector1Type" text="热量表"/>
+					<mx:Text  text="倍率:"/>
+					<mx:TextInput id="txtHeatCollector1Factor" text="0" width="60" />		
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:HBox>
+					<mx:ComboBox id="cbCollector2Type" dataProvider="{collector2Type}" width="110" change="updateUI()"></mx:ComboBox>
+					<mx:Text id="lblCollector2Type"  text="热量表"/>
+					<mx:Text  text="倍率:"/>
+					<mx:TextInput id="txtHeatCollector2Factor" text="0" width="60" />		
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:HBox>
+					<mx:ComboBox id="cbCollector3Type" dataProvider="{collector3Type}" width="110" change="updateUI()"></mx:ComboBox>
+					<mx:Text id="lblCollector3Type" text="热量表"/>
+					<mx:Text  text="倍率:"/>
+					<mx:TextInput id="txtHeatCollector3Factor" text="0" width="60" />		
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:VBox>
+		
+		<mx:VBox>
+			<mx:Text  text="辅助单元计量："/>
+			<mx:FormItem>
+				<mx:HBox>
+					<mx:ComboBox id="cbAuxiliaryType" dataProvider="{auxiliaryType}" width="110" change="updateUI()"></mx:ComboBox>
+					<mx:ComboBox id="cbOilType" width="65"></mx:ComboBox>
+					<mx:ComboBox id="cbGasType" width="105"></mx:ComboBox>	
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:HBox>
+					<mx:Text id="lblAuxiliaryType" text="电能表"/>
+					<mx:Text text="倍率:"/>
+					<mx:TextInput id="txtAuxiliaryEleFactor" text="0" width="56" />	
+					<mx:Text id="lblAuxiliaryEleFactor"  text="   电Eff:"/>
+					<mx:TextInput id="txtAirHeat_COP" text="0" width="60" />	
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:VBox>
+		
+		
+	</mx:VBox>
+	
+	<mx:VBox>
+		<mx:Text text="系统泵阀配置项：" />
+		<mx:HRule width="100%"/>
+		<mx:HBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:RadioButtonGroup id="rgWaterInflowCollector1Type"/>
+				<mx:RadioButton label="集Ⅰ进水增压泵" value="1" groupName="rgWaterInflowCollector1Type" width="115" />
+				<mx:RadioButton label="集Ⅰ进水电动阀" value="2" groupName="rgWaterInflowCollector1Type" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:RadioButtonGroup id="rgWaterInflowCollector2Type"/>
+				<mx:RadioButton label="集Ⅱ进水增压泵" value="1" groupName="rgWaterInflowCollector2Type" width="115" />
+				<mx:RadioButton label="集Ⅱ进水电动阀" value="2" groupName="rgWaterInflowCollector2Type" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:RadioButtonGroup id="rgWaterInflowCollector3Type"/>
+				<mx:RadioButton label="集Ⅲ进水增压泵" value="1" groupName="rgWaterInflowCollector3Type" width="115" />
+				<mx:RadioButton label="集Ⅲ进水电动阀" value="2" groupName="rgWaterInflowCollector3Type" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+		</mx:HBox>
+		<mx:HRule width="100%" />
+		
+		<mx:HBox>
+			<mx:VRule height="25" />
+			<mx:VBox>
+				<mx:CheckBox id="chbCPumpCollector1Status" label="集Ⅰ强制循环泵" width="115" />
+			</mx:VBox>
+			<mx:VRule height="25" />
+			<mx:VBox>
+				<mx:CheckBox id="chbCPumpCollector2Status" label="集Ⅱ强制循环泵" width="115" />
+			</mx:VBox>
+			<mx:VRule height="25" />
+			<mx:VBox>
+				<mx:CheckBox id="chbCPumpCollector3Status" label="集Ⅲ强制循环泵" width="115" />
+			</mx:VBox>
+			<mx:VRule height="25" />
+		</mx:HBox>
+		
+		<mx:HRule width="100%"/>
+		<mx:HBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:RadioButtonGroup id="rgPSWaterAddPumpType"/>
+				<mx:RadioButton label="产供补水增压泵" value="1" groupName="rgPSWaterAddPumpType" width="115" />
+				<mx:RadioButton label="产供补水电动阀" value="2" groupName="rgPSWaterAddPumpType" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:RadioButtonGroup id="rgPSCirclePumpType"/>
+				<mx:RadioButton label="产供循环泵" value="1" groupName="rgPSCirclePumpType" width="115" />
+				<mx:RadioButton label="产供电动阀" value="2" groupName="rgPSCirclePumpType" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:RadioButtonGroup id="rgAWaterAddPumpType"/>
+				<mx:RadioButton label="辅助补水增压泵" value="1" groupName="rgAWaterAddPumpType" width="115" />
+				<mx:RadioButton label="辅助补水电动阀" value="2" groupName="rgAWaterAddPumpType" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+		</mx:HBox>
+		
+		<mx:HRule width="100%"/>
+		<mx:HBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:CheckBox id="chbBackwaterCirclePumpStatus" label="回水循环泵" width="115" />
+				<mx:CheckBox id="chbBackwaterEleValveStatus" label="回水电动阀" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:CheckBox id="chbSupplyHeatCirclePumpStatus" label="供热水增压泵" width="115" />
+				<mx:CheckBox id="chbSupplyHeatEleValveStatus" label="供热水电动阀" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+			<mx:VBox>
+				<mx:CheckBox id="chbAHeatAddCirclePumpStatus" label="辅助加热循环泵" width="115" />
+				<mx:CheckBox id="chbAHeatAddEleValveStatus" label="辅助加热电动阀" width="115" />
+			</mx:VBox>
+			<mx:VRule height="55" />
+		</mx:HBox>
+		<mx:HRule width="100%"/>
+		
+		<mx:HBox>
+		</mx:HBox>
+		
+
+	</mx:VBox>
+
+	
+</mx:HBox>
+	<mx:Button label="查询"  x="439" y="350" width="70"	click="this.dispatchEvent(new Event(QUERY_DATAMODE_VIEW))"/>
+	<mx:Button label="保存"  x="528" y="350" width="70" click="saveData()"/>
+	<mx:Button label="返回"  x="615" y="350" width="70" click="this.dispatchEvent(new Event(CLOSE_DATAMODE_VIEW))"/>
+	
+	<mx:Array id="validators">
+		<mx:NumberValidator id="txtTotalWaterFactorValidator" property="text" source="{txtTotalWaterFactor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtTotalEleFactorValidator" property="text" source="{txtTotalEleFactor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtHeatSupplyFactorValidator" property="text" source="{txtHeatSupplyFactor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtBackWaterFactorValidator" property="text" source="{txtBackWaterFactor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtHeatCollector1FactorValidator" property="text" source="{txtHeatCollector1Factor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtHeatCollector2FactorValidator" property="text" source="{txtHeatCollector2Factor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtHeatCollector3FactorValidator" property="text" source="{txtHeatCollector3Factor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtAuxiliaryEleFactorValidator" property="text" source="{txtAuxiliaryEleFactor}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		<mx:NumberValidator id="txtAirHeat_COPValidator" property="text" source="{txtAirHeat_COP}" required="true" 
+			requiredFieldError="不可为空" minValue="0" lowerThanMinError="最小值为0" invalidCharError="请输入数值" />
+		
+	</mx:Array>
+
+	
+</mx:TitleWindow>

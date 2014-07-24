@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeHandler()">
+	<mx:VBox top="10" bottom="10" left="10" right="10">
+		<!--mx:Form>
+		<mx:FormItem label="主控器通讯：">
+			<mx:Text id="ARM" width="60"/>
+		</mx:FormItem>
+		<mx:FormItem label="无线主机正常通道通讯：">
+			<mx:Text id="WirelessMaster_Normal" width="60"/>
+		</mx:FormItem>
+		<mx:FormItem label="无线从机通讯：">
+			<mx:Text id="WirelessSlave" width="60"/>
+		</mx:FormItem>
+		<mx:FormItem label="无线主机报警通道通讯：">
+			<mx:Text id="WirelessMaster_Alarm" width="60"/>
+		</mx:FormItem>
+		
+		</mx:Form-->
+		<mx:Button label="刷新" click="refresh()"/>
+		<mx:DataGrid dataProvider="{myXML}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="国家" dataField="@Country"/>
+				<mx:DataGridColumn headerText="省" dataField="@Province"/>
+				<mx:DataGridColumn headerText="市" dataField="@City"/>
+				<mx:DataGridColumn headerText="小区" dataField="@Community"/>
+				<mx:DataGridColumn headerText="太阳能系统" dataField="@System_Name"/>
+				<mx:DataGridColumn headerText="无线主机正常通道" dataField="@WirelessMaster_Normal" width="120"/>
+				<mx:DataGridColumn headerText="无线主机报警通道" dataField="@WirelessMaster_Alarm" width="120"/>
+				<mx:DataGridColumn headerText="无线从机" dataField="@WirelessSlave"/>
+				<mx:DataGridColumn headerText="主控器" dataField="@ARM"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			public static const REFRESH_COMMUNICATE_STATUS:String = "RefreshCommunicateStatus";
+			public static const CLOSE_COMMUNICATE_ERROR_VIEW:String = "CloseCommunicateErrorView";
+			[Bindable]
+			private var myXML:XMLList;
+			private function refresh():void {
+				this.dispatchEvent(new Event(REFRESH_COMMUNICATE_STATUS));
+			}
+			public function setData(data:XML):void {
+				myXML = data.row;
+			}
+			private function closeHandler():void {
+				this.dispatchEvent(new Event(CLOSE_COMMUNICATE_ERROR_VIEW));
+			}
+		]]>
+	</mx:Script>
+	
+</mx:TitleWindow>

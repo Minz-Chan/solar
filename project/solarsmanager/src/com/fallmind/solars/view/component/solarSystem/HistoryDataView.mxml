@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	showCloseButton="true" close="closeWindow()" creationComplete="initTimeBox()">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.CheckBox;
+			import mx.managers.PopUpManager;
+			[Bindable]
+			private var yearArray:Array = new Array;
+			[Bindable]
+			private var monthArray:Array = new Array;
+			[Bindable]
+			private var dayArray:Array = new Array;
+			[Bindable]
+			private var hourArray:Array = new Array;
+			[Bindable]
+			private var minuteArray:Array = new Array;
+			
+			public static const CLOSE_HISTORY_DATA_VIEW:String = "closehistoryDataView";
+			
+			private function allSelected():void {
+				for each(var gridRow:GridRow in checkBoxGrid.getChildren()) {
+					for each(var gridItem:GridItem in gridRow.getChildren()) {
+						var checkBox:CheckBox = gridItem.getChildAt(0) as CheckBox;
+						checkBox.selected = true;
+					}
+				}
+			}
+			private function allNoSelected():void {
+				for each(var gridRow:GridRow in checkBoxGrid.getChildren()) {
+					for each(var gridItem:GridItem in gridRow.getChildren()) {
+						var checkBox:CheckBox = gridItem.getChildAt(0) as CheckBox;
+						checkBox.selected = false;
+					}
+				}
+			}
+ 			private function initTimeBox():void {
+ 				var currentDate:Date = new Date();
+				for(var year:int = 2010; year < 2030; year++) {
+					var object1:Object = {
+						data : year,
+						label : year + "年"
+					};
+					yearArray.push(object1);
+				}	
+				endYear.selectedIndex = currentDate.fullYear - 2010;
+				if(currentDate.month == 0) {
+					startYear.selectedIndex = currentDate.fullYear - 2010 - 1;
+				} else {
+					startYear.selectedIndex = currentDate.fullYear - 2010;
+				}
+				for(var month:int = 1; month < 13; month++) {
+					var object2:Object = {
+						data : month,
+						label : month + "月"
+					};
+					monthArray.push(object2);
+				}
+				endMonth.selectedIndex = currentDate.month;
+				if(currentDate.month == 0) {
+					startMonth.selectedIndex = 11;
+				} else {
+					startMonth.selectedIndex = currentDate.month - 1;
+				}
+				for(var day:int = 1; day < 31; day++) {
+					var object3:Object = {
+						data : day,
+						label : day + "日"
+					};
+					dayArray.push(object3);
+				}
+				startDay.selectedIndex = currentDate.date - 1;
+				endDay.selectedIndex = currentDate.date -1;
+				for(var hour:int = 0; hour < 24; hour++) {
+					var object4:Object = {
+						data : hour,
+						label : hour + "时"
+					};
+					hourArray.push(object4);
+				}
+				startHour.selectedIndex = currentDate.hours - 1;
+				endHour.selectedIndex = currentDate.hours - 1;
+				for(var minute:int = 0; minute < 60; minute++) {
+					var object5:Object = {
+						data : minute,
+						label : minute + "分"
+					};
+					minuteArray.push(object5);
+				}
+				startMinute.selectedIndex = currentDate.minutes - 1;
+				endMinute.selectedIndex = currentDate.minutes - 1;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox horizontalAlign="center" top="10" left="10" right="10" bottom="10">
+	<mx:Form fontSize="12">
+		<mx:FormItem label="起始时间">
+			<mx:HBox width="100%">
+				<mx:ComboBox width="90" id="startYear" dataProvider="{yearArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startMonth" dataProvider="{monthArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startDay" dataProvider="{dayArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startHour" dataProvider="{hourArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="startMinute" dataProvider="{minuteArray}" labelField="label"></mx:ComboBox>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="终止时间">
+			<mx:HBox width="100%">
+				<mx:ComboBox width="90" id="endYear" dataProvider="{yearArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endMonth" dataProvider="{monthArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endDay" dataProvider="{dayArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endHour" dataProvider="{hourArray}" labelField="label"></mx:ComboBox>
+				<mx:ComboBox width="90" id="endMinute" dataProvider="{minuteArray}" labelField="label"></mx:ComboBox>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:Grid id="checkBoxGrid">
+		<mx:GridRow>
+              	<mx:GridItem>
+                    <mx:CheckBox label="环境温度" name="Environment_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="日照强度" name="SunlightIntension" fontSize="12"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="集热板1进水泵状态" name="Collector1_In_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	<mx:GridItem>
+                   <mx:CheckBox label="集热板1入口水温" name="Collector1_In_T" fontSize="12" selected="true"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                    <mx:CheckBox label="集热板1出水流量" name="Collector1_Out_flow" fontSize="12"/>
+                </mx:GridItem>
+           	<mx:GridItem>
+                    <mx:CheckBox label="集热板2进水泵状态" name="Collector2_In_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	<mx:GridItem>
+                    <mx:CheckBox label="集热板2入口水温" name="Collector2_In_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="集热板2出水流量" name="Collector2_Out_flow" fontSize="12"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="集热板3进水泵状态" name="Collector3_In_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+     
+         <mx:GridRow>
+         	 <mx:GridItem>
+                    <mx:CheckBox label="集热板3入口水温" name="Collector3_In_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="集热板3出水流量" name="Collector3_Out_flow" fontSize="12"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="集热板1水箱循环泵状态" name="Collector1_Loop_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	 <mx:GridItem>
+                    <mx:CheckBox label="集热板1出口水温" name="Collector1_Out_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                 <mx:GridItem>
+                    <mx:CheckBox label="用户用水流量" name="Use_flow" fontSize="12"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="集热板2水箱循环泵状态" name="Collector2_Loop_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	 <mx:GridItem>
+                    <mx:CheckBox label="集热板2出口水温" name="Collector2_Out_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                	<mx:CheckBox label="空气源热泵耗电量" name="AirHeat_Elec" fontSize="12"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="集热板3水箱循环泵状态" name="Collector3_Loop_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	 <mx:GridItem>
+                    <mx:CheckBox label="集热板3出口水温" name="Collector3_Out_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="电加热耗电量" name="ElecHeat_Elec" fontSize="12"/>
+                </mx:GridItem>
+                	<mx:GridItem>
+                    <mx:CheckBox label="供热补水泵状态" name="Product_Box_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	<mx:GridItem>
+                    <mx:CheckBox label="供热水箱水温" name="OfferBox_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                 <mx:GridItem>
+                    <mx:CheckBox label="消耗的总电量" name="Total_Elec" fontSize="12"/>
+                </mx:GridItem>
+                 <mx:GridItem>
+                    <mx:CheckBox label="产供循环泵状态" name="Offer_Product_Box_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	<mx:GridItem>
+                    <mx:CheckBox label="产热水箱水温" name="ProductBox_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                 <mx:GridItem>
+                    <mx:CheckBox label="太阳能产生的热能" name="solar_energy" fontSize="12"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="空气源热泵状态" name="AirHeat_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	<mx:GridItem>
+                    <mx:CheckBox label="回水管水温" name="ReturnPipe_T" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                 <mx:GridItem>
+                    <mx:CheckBox label="定时进冷水泵状态" name="Cold_Box_Open" fontSize="12"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="电加热状态" name="ElecHeat_Open" fontSize="12"/>
+                </mx:GridItem>
+         </mx:GridRow>
+         <mx:GridRow>
+         	<mx:GridItem>
+                    <mx:CheckBox label="供热水箱水位" name="OfferBox_WL" fontSize="12" selected="true"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:CheckBox label="回水泵状态" name="ReturnPipe_Open" fontSize="12"/>
+                </mx:GridItem>  
+                 <mx:GridItem>
+                    <mx:CheckBox label="用户用水增压泵状态" name="Pressure_Box_Open" fontSize="12"/>
+                </mx:GridItem>     
+         </mx:GridRow>
+         <mx:GridRow>
+         	 <mx:GridItem>
+                    <mx:CheckBox label="产热水箱水位" name="ProductBox_WL" fontSize="12" selected="true"/>
+                </mx:GridItem>
+         </mx:GridRow>
+	</mx:Grid>
+	<mx:HBox>
+		<mx:Button label="全选" click="allSelected()"/>
+		<mx:Button label="全不选" click="allNoSelected()"/>
+		<mx:Button label="确定" fontSize="12" click="confirm()" id="confirmButton"/>
+		<mx:Button label="返回" fontSize="12" click="closeWindow()"/>
+	</mx:HBox>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			public static const HISTORYDATA_VIEW_CONFIRM:String = "HistoryDataViewConfirm";
+			private function confirm():void {
+				this.dispatchEvent(new Event(HISTORYDATA_VIEW_CONFIRM));
+			}
+			
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_HISTORY_DATA_VIEW));
+			}
+			
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

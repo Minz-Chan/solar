@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" label="太阳能系统信息管理" width="100%" height="100%" fontSize="12">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			public static const COUNTRY_TYPE:String = "1";
+			public static const PROVINCE_TYPE:String = "2";
+			public static const CITY_TYPE:String = "3";
+			public static const DIRECT_CITY_TYPE:String = "4";
+			
+			public static const ADD_SOLARSYSTEM:String = "AddSolarSystem";
+			public static const EDIT_SOLARSYSTEM:String = "EditSolarSystem";
+			public static const DELETE_SOLARSYSTEM:String = "DeleteSolarSystem";
+		
+			
+			public var totalData:XML;
+			
+			[Bindable]
+			public var countryButtonData:XMLList;
+			[Bindable]
+			public var provinceButtonData:XMLList;
+			[Bindable]
+			public var cityButtonData:XMLList;
+		
+			[Bindable]
+			public var solarInfoData:XMLList;
+			[Bindable]
+			public var communityButtonData:XMLList;
+			
+			//public var totalData:XMLList;
+			public var totalCommunityData:XMLList;
+			
+			public var totalSolarInfo:XMLList;
+			
+			private function createWin(className:Class):void {
+				var u:TitleWindow = className(PopUpManager.createPopUp(this, className, true));
+				u.x = this.stage.width / 2 - u.width / 2;
+				u.y = this.stage.height / 2 - u.height / 2;
+			}
+			
+			private function addSolarSystem():void {
+				this.dispatchEvent(new Event(ADD_SOLARSYSTEM));
+			}
+			
+			private function editSolarSystem():void {
+				if(solarSystemDataGrid.selectedItem == null) {
+					Alert.show("请选择一个系统");
+					return;
+				}
+				this.dispatchEvent(new Event(EDIT_SOLARSYSTEM));
+			}
+			private function deleteSolarSystem():void {
+				if(solarSystemDataGrid.selectedItem == null) {
+					Alert.show("请选择一个系统");
+					return;
+				}
+				Alert.show("确认删除", "删除", Alert.YES | Alert.NO, this, confirmCloseHandler);
+				//this.dispatchEvent(new Event(DELETE_SOLARSYSTEM));
+			}
+			
+			private function confirmCloseHandler(e:CloseEvent):void {
+				if(e.detail == Alert.YES) {
+					this.dispatchEvent(new Event(DELETE_SOLARSYSTEM));
+				} else  {
+					return;
+				}
+			}
+			
+			public function closeHandler(e:Event):void {
+				if( ComboBox(e.target).selectedItem == null) {
+					return;
+				}
+				
+				if( ComboBox(e.target).selectedItem.@TypeLevel == COUNTRY_TYPE) {
+					provinceButtonData = totalData.row.(@BelongRel == countryBox.selectedItem.@AreaID);
+					if(provinceButtonData.length() != 0) {
+						cityButtonData = totalData.row.(@BelongRel == provinceBox.selectedItem.@AreaID);
+						if(cityButtonData.length() != 0) {
+							communityButtonData = totalCommunityData.(@BelongAreaID == cityBox.selectedItem.@AreaID);
+							if(communityBox.selectedItem != null) {
+								solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@CommunityID);
+							} else {
+								solarInfoData = null;
+							}
+						}
+					} else {
+						provinceButtonData = null;
+						cityButtonData = null;
+						communityButtonData = null;
+						solarInfoData = null;
+					}
+				} else if( ComboBox(e.target).selectedItem.@TypeLevel == PROVINCE_TYPE ) {
+					cityButtonData = totalData.row.(@BelongRel==provinceBox.selectedItem.@AreaID);
+					if(cityButtonData.length() != 0) {
+						communityButtonData = totalCommunityData.(@BelongAreaID == cityBox.selectedItem.@AreaID);
+						if(communityBox.selectedItem != null) {
+							solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@CommunityID);
+						} else {
+							solarInfoData = null;
+						}
+					} else {
+						communityButtonData = null;
+						solarInfoData = null;
+					}
+				} else if( ComboBox(e.target).selectedItem.@TypeLevel == CITY_TYPE) {
+					if( cityButtonData.length() != 0) {
+						communityButtonData = totalCommunityData.(@BelongAreaID == cityBox.selectedItem.@AreaID);
+						if(communityBox.selectedItem != null) {
+							solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@CommunityID);
+						} else {
+							solarInfoData = null;
+						}
+					} else {
+						communityButtonData = null;
+						solarInfoData = null;
+					}
+				} else {
+					//cityButtonData = null;
+					//communityButtonData = totalCommunityData.(@BelongAreaID == provinceBox.selectedItem.@AreaID);
+					if(communityBox.selectedItem != null) { 
+						solarInfoData = totalSolarInfo.(@BelCommunityID==communityBox.selectedItem.@CommunityID);
+					} else {
+						solarInfoData = null;
+					}
+				}
+	
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label x="0" y="0" text="太阳能系统信息管理" fontSize="16"/>
+	<mx:Canvas left="10" right="10" bottom="10" top="30">
+		<mx:Canvas width="100%">
+			<mx:HBox>
+				<mx:ComboBox id="countryBox" dataProvider="{countryButtonData}" text="国家" fontSize="14" width="120" close="closeHandler(event)" labelField="@AreaName"></mx:ComboBox>
+				<mx:ComboBox id="provinceBox" dataProvider="{provinceButtonData}" text="省份" fontSize="14" width="120" close="closeHandler(event)" labelField="@AreaName"></mx:ComboBox>
+				<mx:ComboBox id="cityBox" dataProvider="{cityButtonData}" text="市" fontSize="14" width="120" close="closeHandler(event)" labelField="@AreaName"></mx:ComboBox>
+				<mx:ComboBox id="communityBox" dataProvider="{communityButtonData}" text="小区" fontSize="14" width="140" close="closeHandler(event)" labelField="@CommunityName"></mx:ComboBox>
+			</mx:HBox>
+			<mx:HBox right="0" top="0">
+				<mx:Button label="添加" fontSize="14" click="addSolarSystem()" width="60"/>
+				<mx:Button label="修改" fontSize="14" click="editSolarSystem()" width="60"/>
+				<mx:Button label="删除" fontSize="14" click="deleteSolarSystem()" width="60"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:DataGrid width="100%" height="88%" bottom="0" dataProvider="{solarInfoData}" id="solarSystemDataGrid">
+			<mx:columns>
+				<mx:DataGridColumn headerText="安装时间" dataField="@FixTime"/>
+				<mx:DataGridColumn headerText="太阳能系统名" dataField="@System_Name"/>
+				<mx:DataGridColumn headerText="主控器ID" dataField="@ARM_ID"/>
+				<mx:DataGridColumn headerText="现场管理员" dataField="@manager"/>
+				<mx:DataGridColumn headerText="管理员电话" dataField="@managerPhone"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:Canvas>
+	
+</mx:Canvas>

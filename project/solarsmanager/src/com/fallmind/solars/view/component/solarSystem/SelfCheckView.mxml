@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			public static const CLOSE_SELF_CHECK_VIEW:String = "CloseSelfCheckView";
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_SELF_CHECK_VIEW));
+			}
+			public function setState(state:int):void {
+				if( state == 0 ) {
+					//stateText.text = "已经是最新数据";
+					stateText.htmlText = "<font color='#000000'>系统自检</font><br>";
+					selfCheckButton.enabled = true;
+				} else if(state == 1) {
+					stateText.htmlText = "<font color='#FF0000'>正在发送指令，请耐心等待</font><br>";
+					selfCheckButton.enabled = false;
+				} else if(state == 2) {
+					//stateText.text = "获取数据超时";
+					stateText.htmlText = "<font color='#FF0000'>自检指令执行失败，以下为上一次操作数据</font><br>";
+					selfCheckButton.enabled = true;
+				}
+			}
+			public function setData(data:XML):void {
+				if(data == null) {
+					return;
+				}
+				if(data.@WirelessMaster_Normal == "1") {
+					WirelessMaster_Normal.text = "成功";
+				} else {
+					WirelessMaster_Normal.text = "失败";
+				}
+				if(data.@WirelessMaster_Alarm == "1") {
+					WirelessMaster_Alarm.text = "成功";
+				} else {
+					WirelessMaster_Alarm.text = "失败";
+				}
+				if(data.@WirelessSlave == "1") {
+					WirelessSlave.text = "成功";
+				} else {
+					WirelessSlave.text = "失败";
+				}
+				if(data.@ARM == "1") {
+					ARM.text = "成功";
+				} else {
+					ARM.text = "失败";
+				}
+				
+				//WirelessMaster_Normal.text = data.@WirelessMaster_Normal;
+				//WirelessMaster_Alarm.text = data.@WirelessMaster_Alarm;
+				//WirelessSlave.text = data.@WirelessSlave;
+				//ARM.text = data.@ARM;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10">
+		<mx:Text id="stateText" text="系统自检"/>
+		<mx:Form>
+		<mx:FormItem label="无线从机通讯：">
+			<mx:Text id="WirelessSlave" width="60"/>
+		</mx:FormItem>
+		<mx:FormItem label="主控器通讯：">
+			<mx:Text id="ARM" width="60"/>
+		</mx:FormItem>
+		<mx:FormItem label="无线主机正常通道通讯：">
+			<mx:Text id="WirelessMaster_Normal" width="60"/>
+		</mx:FormItem>
+		<mx:FormItem label="无线主机报警通道通讯：">
+			<mx:Text id="WirelessMaster_Alarm" width="60"/>
+		</mx:FormItem>
+		
+	</mx:Form>
+	<mx:HBox>
+		<mx:Button label="自检" click="showSelfCheck()" id="selfCheckButton"/>
+		<mx:Button label="返回" click="closeWindow()"/>
+	</mx:HBox>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			public static const SHOW_SELF_CHECK:String = "ShowSelfCheck";
+			private function showSelfCheck():void {
+				this.dispatchEvent(new Event(SHOW_SELF_CHECK));
+			}
+		]]>
+	</mx:Script>
+	
+</mx:TitleWindow>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" showCloseButton="true" close="closeWindow()">
+	<mx:Script>
+		<![CDATA[
+			import com.fallmind.solars.model.CheckProxy.SeasonData;
+			import com.fallmind.solars.model.bussiness.ConfigManager;
+			import mx.controls.Alert;
+			public static const CLOSE_SEASON_DEFAULT_SETUP_VIEW:String = "CloseSeasonDefaultSetupView";
+			public static const SAVE_SEASON_DEFAULT_SETUP:String = "SaveSeasonDefaultSetup";
+			private var config:ConfigManager = ConfigManager.getManageManager();
+			private function closeWindow():void {
+				this.dispatchEvent(new Event(CLOSE_SEASON_DEFAULT_SETUP_VIEW));
+			}
+			public function colorBack():void {
+				SA_StartTime_Month.setStyle("color", "0x000000");
+				SA_StartTime_Day.setStyle("color", "0x000000");
+				
+				WS_StartTime_Month.setStyle("color", "0x000000");
+				WS_StartTime_Day.setStyle("color", "0x000000");
+				
+				SA_Collector_T_H.setStyle("color", "0x000000");
+				WS_Collector_T_H.setStyle("color", "0x000000");
+			}
+			public function setState(state:int):void {
+				switch(state) {
+					case 0:
+						stateText.htmlText = "<font color='#000000'>设置四季默认参数</font><br>";
+						textInputEnable(true);
+						break;
+					case 1:
+						stateText.htmlText = "<font color='#FF0000'>正在设置,请耐心等待</font><br>";
+						textInputEnable(false);
+						break;
+					case 2:
+						stateText.htmlText = "<font color='#FF0000'>设置超时，以下为上一次操作数据</font><br>";
+						textInputEnable(true);
+						break;
+					case 3:
+						stateText.htmlText = "<font color='#000000'>当前四级默认参数</font><br>";
+						searchButton.enabled = true;
+						break;
+					case 4:
+						stateText.htmlText = "<font color='#FF0000'>正在发送指令，这个过程可能比较久，请耐心等待</font><br>";
+						searchButton.enabled = false;
+						break;
+					case 5:
+						stateText.htmlText = "<font color='#FF0000'>查询指令执行超时，以下为历史数据</font><br>";
+						searchButton.enabled = true;
+						break;
+					case 6:
+						stateText.htmlText = "<font color='#FF0000'>以下为历史数据，查看最新数据请点击查询按钮</font><br>";
+						searchButton.enabled = true;
+						break;
+				}
+			}
+			public function setFromSeasonData(data:SeasonData):void {
+				SA_StartTime_Month.text = data.SA_StartTime_Month;
+				SA_StartTime_Day.text = data.SA_StartTime_Day;
+				
+				WS_StartTime_Month.text = data.WS_StartTime_Month;
+				WS_StartTime_Day.text = data.WS_StartTime_Day;
+				
+				SA_Collector_T_H.text = data.SA_Collector_T_H;
+				WS_Collector_T_H.text = data.WS_Collector_T_H;
+			}
+			private function saveHandler():void {
+				if(SA_StartTime_Month.text == "" || int(SA_StartTime_Month.text) > 12 || 
+					SA_StartTime_Day.text == "" || int(SA_StartTime_Day.text) > 31 || 
+					WS_StartTime_Month.text == "" || int(WS_StartTime_Month.text) > 12 ||
+					WS_StartTime_Day.text == "" || int(WS_StartTime_Day.text) > 31 ) {
+					Alert.show("日期输入格式不规范");
+					return;	
+				}
+				if(int(SA_Collector_T_H.text) < config.lowestTemp || int(SA_Collector_T_H.text) > config.highestTemp) {
+					alertShow("夏秋季节集热板定温出水水温", config.lowestTemp, config.highestTemp);
+					return;
+				}
+				if(int(WS_Collector_T_H.text) < config.lowestTemp || int(WS_Collector_T_H.text) > config.highestTemp) {
+					alertShow("冬春季节集热板定温出水水温", config.lowestTemp, config.highestTemp);
+					return;
+				}
+				this.dispatchEvent(new Event(SAVE_SEASON_DEFAULT_SETUP));
+			}
+			private function alertShow(content:String, low:int, high:int):void {
+				Alert.show( content + "的值必须介于" + low + "和" + high + "之间!"); 
+			}
+			public function checkReturnData(xml:XML):void {
+				var saSourceText:String = xml.@SA_StartTime;
+				var wsSourceText:String = xml.@WS_StartTime;
+				
+				if( SA_StartTime_Month.text != int(saSourceText.substr(0, 2)).toString()) {
+					SA_StartTime_Month.htmlText = "<font color='#FF0000'>" + int(saSourceText.substr(0, 2)).toString() + "</font><br>";
+				} else {
+					SA_StartTime_Month.htmlText = "<font color='#000000'>" + int(saSourceText.substr(0, 2)).toString() + "</font><br>";
+				}
+				if( SA_StartTime_Day.text != int(saSourceText.substr(2, 2)).toString()) {
+					SA_StartTime_Day.htmlText = "<font color='#FF0000'>" + int(saSourceText.substr(2, 2)).toString() + "</font><br>";
+				} else {
+					SA_StartTime_Day.htmlText = "<font color='#000000'>" + int(saSourceText.substr(2, 2)).toString() + "</font><br>";
+				}
+				
+				if( WS_StartTime_Month.text != int(wsSourceText.substr(0, 2)).toString()) {
+					WS_StartTime_Month.htmlText = "<font color='#FF0000'>" + int(wsSourceText.substr(0, 2)).toString() + "</font><br>";
+				} else {
+					WS_StartTime_Month.htmlText = "<font color='#000000'>" + int(wsSourceText.substr(0, 2)).toString() + "</font><br>";
+				}
+				if( WS_StartTime_Day.text != int(wsSourceText.substr(2, 2)).toString()) {
+					WS_StartTime_Day.htmlText = "<font color='#FF0000'>" + int(wsSourceText.substr(2, 2)).toString() + "</font><br>";
+				} else {
+					WS_StartTime_Day.htmlText = "<font color='#000000'>" + int(wsSourceText.substr(2, 2)).toString() + "</font><br>";
+				}
+				
+				if( SA_Collector_T_H.text != xml.@SA_Collector_T_H ) {
+					SA_Collector_T_H.htmlText = "<font color='#FF0000'>" + xml.@SA_Collector_T_H + "</font><br>";
+				} else {
+					SA_Collector_T_H.htmlText = "<font color='#000000'>" + xml.@SA_Collector_T_H + "</font><br>";
+				}
+				if( WS_Collector_T_H.text != xml.@WS_Collector_T_H ){
+					WS_Collector_T_H.htmlText = "<font color='#FF0000'>" + xml.@WS_Collector_T_H + "</font><br>";
+				} else {
+					WS_Collector_T_H.htmlText = "<font color='#000000'>" + xml.@WS_Collector_T_H + "</font><br>";
+				}
+			}
+			public function setData(xml:XML):void {
+				if(xml == undefined) {
+					return;
+				}
+				var saSourceText:String = xml.@SA_StartTime;
+				var wsSourceText:String = xml.@WS_StartTime;
+				
+				//SA_StartTime.text = int(saSourceText.substr(0, 2)).toString() + "月" + int(saSourceText.substr(2, 2)) + "日";
+				//WS_StartTime.text = int(wsSourceText.substr(0, 2)).toString() + "月" + int(wsSourceText.substr(2, 2)) + "日";
+				
+				SA_StartTime_Month.text = int(saSourceText.substr(0, 2)).toString();
+				SA_StartTime_Day.text = int(saSourceText.substr(2, 2)).toString();
+				
+				WS_StartTime_Month.text = int(wsSourceText.substr(0, 2)).toString();
+				WS_StartTime_Day.text = int(wsSourceText.substr(2, 2)).toString();
+				
+				SA_Collector_T_H.text = xml.@SA_Collector_T_H;
+				WS_Collector_T_H.text = xml.@WS_Collector_T_H;
+			}
+			public function textInputEnable(b:Boolean):void {
+				SA_StartTime_Month.editable = b;
+				SA_StartTime_Day.editable = b;
+				SA_Collector_T_H.editable = b;
+				WS_StartTime_Month.editable = b;
+				WS_StartTime_Day.editable = b;
+				WS_Collector_T_H.editable = b;
+				
+				saveButton.enabled = b;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10">
+		<mx:HBox>
+			<mx:Text id="stateText" text="设置四季默认参数"/>
+		</mx:HBox>
+		
+		<mx:Form x="10" y="10">
+			<mx:FormItem label="夏秋季节起始时间：">
+				<mx:HBox>
+					<mx:TextInput id="SA_StartTime_Month" width="60" restrict="0-9"/>
+					<mx:Text text="月"/>
+					<mx:TextInput id="SA_StartTime_Day" width="60" restrict="0-9"/>
+					<mx:Text text="日"/>
+				</mx:HBox>
+				
+			</mx:FormItem>
+			<mx:FormItem label="夏秋季节集热板定温出水水温：">
+			<mx:HBox>
+				<mx:TextInput id="SA_Collector_T_H" width="60" restrict="0-9"/>
+				<mx:Text text="度"/>
+			</mx:HBox>
+				
+			</mx:FormItem>
+			<mx:FormItem label="冬春季节起始时间：">
+				<mx:HBox>
+					<mx:TextInput id="WS_StartTime_Month" width="60" restrict="0-9"/>
+					<mx:Text text="月"/>
+					<mx:TextInput id="WS_StartTime_Day" width="60" restrict="0-9"/>
+					<mx:Text text="日"/>
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem label="冬春季节集热板定温出水水温：">
+				<mx:HBox>
+					<mx:TextInput id="WS_Collector_T_H" width="60" restrict="0-9"/>
+					<mx:Text text="度"/>
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Canvas width="100%">
+			<mx:Button label="查询" click="showSeasonSetup()" id="searchButton"/>
+			<mx:HBox right="0">
+				<mx:Button label="保存" click="saveHandler()" id="saveButton"/>
+				<mx:Button label="返回" click="closeWindow()"/>
+			</mx:HBox>
+			
+		</mx:Canvas>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			public static const SHOW_SEASON_SETUP:String = "ShowSeasonSetup";
+			private function showSeasonSetup():void {
+				this.dispatchEvent(new Event(SHOW_SEASON_SETUP));
+			}
+		]]>
+	</mx:Script>
+	
+</mx:TitleWindow>
